@@ -16,8 +16,8 @@ contract ERC721AC_93N is ERC721AC{
     Require all the addresses to get live price from PanCakeSwap
     And to transfer using interface directly
     */
-    address private constant _USDT=0xb27A31f1b0AF2946B7F582768f03239b1eC07c2c;
-    address private constant _TOKEN=0xd9145CCE52D386f254917e481eB44e9943F39138;
+    address private constant _USDT=0x7EF2e0048f5bAeDe046f6BF797943daF4ED8CB47;
+    address private constant _TOKEN=0xD7ACd2a9FD159E69Bb102A1ca21C9a3e3A5F771B;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
     struct User{
@@ -95,8 +95,8 @@ contract ERC721AC_93N is ERC721AC{
         Getting uplines for payout
         */
         (address d1,address d2,address d3)=getUplines(msg.sender); 
-        //_payment(_USDT,msg.sender,address(this),amount,0);
-        //_payment4(_USDT,address(this),[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        _payment(_USDT,msg.sender,address(this),amount,0);
+        _payment4(_USDT,address(this),[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
         _payment4(_TOKEN,address(this),[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],0);
     }}
     function _payment(address con,address from,address to,uint amt,uint status)private{
@@ -189,8 +189,7 @@ contract ERC721AC_93N is ERC721AC{
             address[]memory c1=user[b[i]].downline;
             for(uint j=0;j<c1.length;j++){
                 (c[d2Length]=c1[j],d2Length++);
-                address[]memory d1=user[c1[j]].downline;
-                for(uint k=0;k<d1.length;k++)(d[d3Length]=d1[k],d3Length++);
+                for(uint k=0;k<user[c1[j]].downline.length;k++)(d[d3Length]=user[c1[j]].downline[k],d3Length++);
             }
         }
     }}
