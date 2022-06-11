@@ -190,11 +190,39 @@ contract ERC721AC_93N is ERC721AC{
         for(uint i=0;i<b.length;i++){
             address[]memory c1=user[b[i]].downline;
             for(uint j=0;j<c1.length;j++){
+                (c[d2Length]=c1[j],d2Length++);
+                address[]memory d1=user[c1[j]].downline;
+                for(uint k=0;k<d1.length;k++)(d[d3Length]=d1[k],d3Length++);
+            }
+        }
+    }}
+
+    function getDownlines2(address a)external view returns(uint b,uint c,uint d){unchecked{
+        b=user[a].downline.length;
+        /*
+        Loop through all level 2 and level 3 downlines
+        Create new array counts
+        */
+        for(uint i=0;i<b;i++){
+            address[]memory c1=user[user[a].downline[i]].downline;
+            c+=c1.length;
+            for(uint j=0;j<c1.length;j++)d+=user[c1[j]].downline.length;
+        }
+        /*
+        Set length and reset variables for later use
+        */
+        //(c=new address[](d2Length),d=new address[](d3Length),d2Length=d3Length=0);
+        /*
+        Fill the count with actual address
+        
+        for(uint i=0;i<b.length;i++){
+            address[]memory c1=user[b[i]].downline;
+            for(uint j=0;j<c1.length;j++){
                 address[]memory d1=user[c1[j]].downline;
                 (c[d2Length]=d1[j],d2Length++);
                 for(uint k=0;k<d1.length;k++)(d[d3Length]=user[d1[j]].downline[k],d3Length++);
             }
-        }
+        }*/
     }}
 
     function testM()external{
