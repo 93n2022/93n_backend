@@ -16,8 +16,8 @@ contract ERC721AC_93N is ERC721AC{
     Require all the addresses to get live price from PanCakeSwap
     And to transfer using interface directly
     */
-    address private constant _USDT=0xd9145CCE52D386f254917e481eB44e9943F39138;
-    address private constant _TOKEN=0xddaAd340b0f1Ef65169Ae5E41A8b10776a75482d;
+    address private constant _USDT=0xA831F4e5dC3dbF0e9ABA20d34C3468679205B10A;
+    address private constant _TOKEN=0x9bF88fAe8CF8BaB76041c1db6467E7b37b977dD7;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
     struct User{
