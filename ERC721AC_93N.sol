@@ -1,4 +1,4 @@
-/*** [DEPLOYMEN] CHANGE TOKEN ADDRESSES & WEB3 APPROVAL FIRST ***/
+/*** [DEPLOYMENT] CHANGE TOKEN ADDRESSES ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 import"https://github.com/aloycwl/ERC_AC/blob/main/ERC721AC/ERC721AC.sol";
 interface IERC20{function transferFrom(address,address,uint)external;}
@@ -14,7 +14,7 @@ contract ERC721AC_93N is ERC721AC{
     */
     address private constant _USDT=0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee;
     address private constant _TOKEN=0xE02dF9e3e622DeBdD69fb838bB799E3F168902c5;
-    address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
+    //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0x15eD406870dB283E810D5885e432d315C94DD0dd;
     struct User{
         address upline;
@@ -76,8 +76,9 @@ contract ERC721AC_93N is ERC721AC{
         */
         address[]memory pair=new address[](2); 
         (pair[0],pair[1])=(_TOKEN,_USDT);
-        uint[]memory currentPrice=IPCSV2(_PCSV2).getAmountsOut(amount,pair);
-        (uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);
+        //uint[]memory currentPrice=IPCSV2(_PCSV2).getAmountsOut(amount,pair);
+        //(uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);
+        (uint tokens,User storage u)=(amount,user[msg.sender]);
         (u.months=months,u.wallet=tokens,u.dateJoined=u.lastClaimed=block.timestamp,u.totalDeposit+=amount);
         _payment4(_TOKEN,address(this),[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],0);
         /*
