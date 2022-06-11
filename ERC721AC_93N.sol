@@ -1,4 +1,8 @@
-/*** [DEPLOYMENT] CHANGE TOKEN ADDRESSES ***/
+/***
+[DEPLOYMENT] CHANGE TOKEN ADDRESSES
+[QUERIES]
+1. If user redeposit before his tenure ends, can the total amount be override?
+***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 import"https://github.com/aloycwl/ERC_AC/blob/main/ERC721AC/ERC721AC.sol";
 interface IERC20{function transferFrom(address,address,uint)external;function testMint()external;}
@@ -13,7 +17,7 @@ contract ERC721AC_93N is ERC721AC{
     And to transfer using interface directly
     */
     address private constant _USDT=0xb27A31f1b0AF2946B7F582768f03239b1eC07c2c;
-    address private constant _TOKEN=0xEc29164D68c4992cEdd1D386118A47143fdcF142;
+    address private constant _TOKEN=0xd9145CCE52D386f254917e481eB44e9943F39138;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
     struct User{
@@ -59,49 +63,42 @@ contract ERC721AC_93N is ERC721AC{
         emit Approval(_owners[c],b,c);
         emit Transfer(a,b,c);
     }}
-    function Deposit(address referral,uint amount,uint months)external payable{unchecked{
+    function Deposit(address referral,uint amount,uint months)external{unchecked{
         require(referral!=msg.sender);
-        require(user[msg.sender].upline!=address(0));
-        /*
-        Uplines & tech to get USDT 5%, 3%, 2% & tech 1%
-        Getting uplines for payout
-        */
-        (address d1,address d2,address d3)=getUplines(msg.sender); 
-        //_payment(_USDT,msg.sender,address(this),amount,0);
-        //_payment4(_USDT,address(this),[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        require(user[referral].upline!=address(0));
         /*
         Connect to PanCakeSwap to get the live price
         Issue the number of tokens in equivalent to USDT
         Initiate new user
-        Uplines to get tokens 5%, 10%, 15%
         */
-        address[]memory pair=new address[](2); 
+        /*address[]memory pair=new address[](2); 
         (pair[0],pair[1])=(_TOKEN,_USDT);
-        //uint[]memory currentPrice=IPCSV2(_PCSV2).getAmountsOut(amount,pair);
-        //(uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);
+        uint[]memory currentPrice=IPCSV2(_PCSV2).getAmountsOut(amount,pair);
+        (uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);*/
         (uint tokens,User storage u)=(amount,user[msg.sender]);
         (u.months=months,u.wallet=tokens,u.dateJoined=u.lastClaimed=block.timestamp,u.totalDeposit+=amount);
-        _payment4(_TOKEN,address(this),[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],0);
         /*
         Only mint and set variable when user is new
         Only set upline and downline when user is new
         Add user into enumUser for counting purposes
         */
-        if(u.dateJoined<1){
+        if(u.upline==address(0)){
             u.upline=referral==address(0)?_owner:referral;
             (_owners[_count]=msg.sender,_count++);
             user[referral].downline.push(msg.sender);
             enumUser.push(msg.sender);
             emit Transfer(address(0),msg.sender,_count);
         }
-    }}
-    function getUplines(address a)private view returns(address d1,address d2,address d3){
         /*
-        Get direct first
-        Use previous direct to get next direct and so on
+        Uplines & tech to get USDT 5%, 3%, 2% & tech 1%
+        Uplines to get tokens 5%, 10%, 15%
+        Getting uplines for payout
         */
-        (d1=user[a].upline,d2=user[d1].upline,d3=user[d2].upline);
-    }
+        (address d1,address d2,address d3)=getUplines(msg.sender); 
+        //_payment(_USDT,msg.sender,address(this),amount,0);
+        //_payment4(_USDT,address(this),[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        _payment4(_TOKEN,address(this),[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],0);
+    }}
     function _payment(address con,address from,address to,uint amt,uint status)private{
         /*
         Custom connection to the various token address
@@ -110,7 +107,7 @@ contract ERC721AC_93N is ERC721AC{
         IERC20(con).transferFrom(from,to,amt);
         emit Payout(from,to,amt,status);
     }
-    function _payment4(address con,address from,address[4]memory to,uint[4]memory amt,uint status)private{
+    function _payment4(address con,address from,address[4]memory to,uint[4]memory amt,uint status)private{unchecked{
         /*
         Payout loop of 4 iterations
         Exit fuction (for payment of USDT) if no address found
@@ -119,7 +116,7 @@ contract ERC721AC_93N is ERC721AC{
             if(to[i]==address(0))return;
             _payment(con,from,to[i],amt[i],status);
         }
-    }
+    }}
     function Staking()external{unchecked{
         /*
         Go through every users and pay them and their upline accordingly
@@ -163,7 +160,14 @@ contract ERC721AC_93N is ERC721AC{
         require(msg.sender==_owner);
         Split=num;
     }
-    function getDownlines(address a)external view returns(address[]memory b,address[]memory c,address[]memory d){
+    function getUplines(address a)private view returns(address d1,address d2,address d3){
+        /*
+        Get direct first
+        Use previous direct to get next direct and so on
+        */
+        (d1=user[a].upline,d2=user[d1].upline,d3=user[d2].upline);
+    }
+    function getDownlines(address a)external view returns(address[]memory b,address[]memory c,address[]memory d){unchecked{
         uint d2Length;
         uint d3Length;
         b=user[a].downline;
@@ -173,13 +177,13 @@ contract ERC721AC_93N is ERC721AC{
         */
         for(uint i=0;i<b.length;i++){
             address[]memory c1=user[b[i]].downline;
-            for(uint j=0;j<c1.length;j++){
-                address[]memory d1=user[c1[j]].downline;
-                d2Length++;
-                for(uint k=0;k<d1.length;k++)d3Length++;
-            }
+            d2Length+=c1.length;
+            for(uint j=0;j<c1.length;j++)d3Length+=user[c1[j]].downline.length;
         }
-        (c,d,d2Length,d3Length)=(new address[](d2Length),new address[](d2Length),0,0);
+        /*
+        Set length and reset variables for later use
+        */
+        (c=new address[](d2Length),d=new address[](d3Length),d2Length=d3Length=0);
         /*
         Fill the count with actual address
         */
@@ -191,7 +195,7 @@ contract ERC721AC_93N is ERC721AC{
                 for(uint k=0;k<d1.length;k++)(d[d3Length]=user[d1[j]].downline[k],d3Length++);
             }
         }
-    }
+    }}
 
     function testM()external{
         IERC20(_TOKEN).testMint();
