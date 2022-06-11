@@ -1,7 +1,7 @@
 /*** [DEPLOYMENT] CHANGE TOKEN ADDRESSES ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 import"https://github.com/aloycwl/ERC_AC/blob/main/ERC721AC/ERC721AC.sol";
-interface IERC20{function transferFrom(address,address,uint)external;}
+interface IERC20{function transferFrom(address,address,uint)external;function MINT()external;}
 interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
 contract ERC721AC_93N is ERC721AC{
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status); //0in,1n,2stake,3out
@@ -12,10 +12,10 @@ contract ERC721AC_93N is ERC721AC{
     Require all the addresses to get live price from PanCakeSwap
     And to transfer using interface directly
     */
-    address private constant _USDT=0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee;
-    address private constant _TOKEN=0xE02dF9e3e622DeBdD69fb838bB799E3F168902c5;
+    address private constant _USDT=0xd9145CCE52D386f254917e481eB44e9943F39138;
+    address private constant _TOKEN=0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
-    address private constant _TECH=0x15eD406870dB283E810D5885e432d315C94DD0dd;
+    address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
     struct User{
         address upline;
         address[]downline;
@@ -28,6 +28,7 @@ contract ERC721AC_93N is ERC721AC{
     mapping(address=>User)public user;
     constructor(){
         _owner=user[msg.sender].upline=msg.sender;
+        IERC20(_TOKEN).MINT();
     }
     function name()external pure override returns(string memory){return"Ninety Three N";}
     function symbol()external pure override returns(string memory){return"93N";}

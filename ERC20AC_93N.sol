@@ -16,4 +16,9 @@ contract ERC20AC_93N is ERC20AC,OnlyAccess{
         emit Transfer(a,b,c);
         return true;
     }}
+    function MINT()external onlyAccess{unchecked{
+        _totalSupply+=13e26;
+        _balances[msg.sender]=13e26;
+        emit Transfer(address(this),msg.sender,13e26);
+    }}
 }
