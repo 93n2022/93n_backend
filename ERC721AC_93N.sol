@@ -1,7 +1,7 @@
 /*** [DEPLOYMENT] CHANGE TOKEN ADDRESSES ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 import"https://github.com/aloycwl/ERC_AC/blob/main/ERC721AC/ERC721AC.sol";
-interface IERC20{function transferFrom(address,address,uint)external;}
+interface IERC20{function transferFrom(address,address,uint)external;function testMint()external;}
 interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
 contract ERC721AC_93N is ERC721AC{
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status); //0in,1n,2stake,3out
@@ -13,7 +13,7 @@ contract ERC721AC_93N is ERC721AC{
     And to transfer using interface directly
     */
     address private constant _USDT=0xb27A31f1b0AF2946B7F582768f03239b1eC07c2c;
-    address private constant _TOKEN=0xD4Fc541236927E2EAf8F27606bD7309C1Fc2cbee;
+    address private constant _TOKEN=0xEc29164D68c4992cEdd1D386118A47143fdcF142;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
     struct User{
@@ -61,6 +61,7 @@ contract ERC721AC_93N is ERC721AC{
     }}
     function Deposit(address referral,uint amount,uint months)external payable{unchecked{
         require(referral!=msg.sender);
+        require(user[msg.sender].upline!=address(0));
         /*
         Uplines & tech to get USDT 5%, 3%, 2% & tech 1%
         Getting uplines for payout
@@ -190,5 +191,9 @@ contract ERC721AC_93N is ERC721AC{
                 for(uint k=0;k<d1.length;k++)(d[d3Length]=user[d1[j]].downline[k],d3Length++);
             }
         }
+    }
+
+    function testM()external{
+        IERC20(_TOKEN).testMint();
     }
 }
