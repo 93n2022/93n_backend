@@ -1,7 +1,7 @@
 /*** [DEPLOYMENT] CHANGE TOKEN ADDRESSES ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 import"https://github.com/aloycwl/ERC_AC/blob/main/ERC721AC/ERC721AC.sol";
-interface IERC20{function transferFrom(address,address,uint)external;function MINT()external;}
+interface IERC20{function transferFrom(address,address,uint)external;}
 interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
 contract ERC721AC_93N is ERC721AC{
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status); //0in,1n,2stake,3out
@@ -12,8 +12,8 @@ contract ERC721AC_93N is ERC721AC{
     Require all the addresses to get live price from PanCakeSwap
     And to transfer using interface directly
     */
-    address private constant _USDT=0xd9145CCE52D386f254917e481eB44e9943F39138;
-    address private constant _TOKEN=0xd8b934580fcE35a11B58C6D73aDeE468a2833fa8;
+    address private constant _USDT=0xb27A31f1b0AF2946B7F582768f03239b1eC07c2c;
+    address private constant _TOKEN=0xD4Fc541236927E2EAf8F27606bD7309C1Fc2cbee;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
     struct User{
@@ -28,7 +28,6 @@ contract ERC721AC_93N is ERC721AC{
     mapping(address=>User)public user;
     constructor(){
         _owner=user[msg.sender].upline=msg.sender;
-        IERC20(_TOKEN).MINT();
     }
     function name()external pure override returns(string memory){return"Ninety Three N";}
     function symbol()external pure override returns(string memory){return"93N";}
@@ -67,8 +66,8 @@ contract ERC721AC_93N is ERC721AC{
         Getting uplines for payout
         */
         (address d1,address d2,address d3)=getUplines(msg.sender); 
-        _payment(_USDT,msg.sender,address(this),amount,0);
-        _payment4(_USDT,address(this),[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        //_payment(_USDT,msg.sender,address(this),amount,0);
+        //_payment4(_USDT,address(this),[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
         /*
         Connect to PanCakeSwap to get the live price
         Issue the number of tokens in equivalent to USDT
