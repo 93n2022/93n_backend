@@ -8,7 +8,10 @@ import"https://github.com/aloycwl/ERC_AC/blob/main/ERC721AC/ERC721AC.sol";
 interface IERC20{function transferFrom(address,address,uint)external;function testMint()external;}
 interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
 contract ERC721AC_93N is ERC721AC{
-    event Payout(address indexed from,address indexed to,uint amount,uint indexed status); //0in,1n,2stake,3out
+    /*
+    The status to be emitted 0-in USDT, 1-in 93N, 2-stake, 3-out
+    */
+    event Payout(address indexed from,address indexed to,uint amount,uint indexed status);
     uint public Split;
     uint private _count;
     address[]private enumUser;
@@ -16,8 +19,8 @@ contract ERC721AC_93N is ERC721AC{
     Require all the addresses to get live price from PanCakeSwap
     And to transfer using interface directly
     */
-    address private constant _USDT=0xA831F4e5dC3dbF0e9ABA20d34C3468679205B10A;
-    address private constant _TOKEN=0x9bF88fAe8CF8BaB76041c1db6467E7b37b977dD7;
+    address private _USDT;
+    address private _TOKEN;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
     struct User{
@@ -30,8 +33,9 @@ contract ERC721AC_93N is ERC721AC{
         uint totalDeposit;
     }
     mapping(address=>User)public user;
-    constructor(){
+    constructor(address _U, address _T){
         _owner=user[msg.sender].upline=msg.sender;
+        (_USDT,_TOKEN)=(_U,_T);
     }
     function name()external pure override returns(string memory){return"Ninety Three N";}
     function symbol()external pure override returns(string memory){return"93N";}
@@ -96,7 +100,7 @@ contract ERC721AC_93N is ERC721AC{
         */
         (address d1,address d2,address d3)=getUplines(msg.sender); 
         _payment(_USDT,msg.sender,address(this),amount,0);
-        //_payment4(_USDT,address(this),[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        _payment4(_USDT,address(this),[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
         _payment4(_TOKEN,address(this),[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],0);
     }}
     function _payment(address con,address from,address to,uint amt,uint status)private{
@@ -193,8 +197,4 @@ contract ERC721AC_93N is ERC721AC{
             }
         }
     }}
-
-    function ______test()external{
-        _payment(_USDT,msg.sender,address(this),726183,0);
-    }
 }
