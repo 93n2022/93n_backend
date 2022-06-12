@@ -14,7 +14,7 @@ contract ERC721AC_93N is ERC721AC{
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status);
     uint public Split;
     uint private _count;
-    address[]private enumUser;
+    address[]private users;
     /*
     Require all the addresses to get live price from PanCakeSwap
     And to transfer using interface directly
@@ -60,9 +60,9 @@ contract ERC721AC_93N is ERC721AC{
         */
         (_tokenApprovals[c]=address(0),_owners[c]=b,user[b]=user[a]);
         delete user[a];
-        for(uint i=0;i<enumUser.length;i++)if(enumUser[i]==a){
-            enumUser[i]=enumUser[enumUser.length-1];
-            enumUser.pop();
+        for(uint i=0;i<users.length;i++)if(users[i]==a){
+            users[i]=users[users.length-1];
+            users.pop();
         }
         emit Approval(_owners[c],b,c);
         emit Transfer(a,b,c);
@@ -90,7 +90,7 @@ contract ERC721AC_93N is ERC721AC{
             u.upline=referral==address(0)?_owner:referral;
             (_owners[_count]=msg.sender,_count++);
             user[referral].downline.push(msg.sender);
-            enumUser.push(msg.sender);
+            users.push(msg.sender);
             emit Transfer(address(0),msg.sender,_count);
         }
         /*
@@ -127,8 +127,8 @@ contract ERC721AC_93N is ERC721AC{
         31,536,000 seconds a year=exactly 730 hours
         Get last claim and time joined to accurately payout
         */
-        for(uint i=0;i<enumUser.length;i++){
-            address d0=enumUser[i];
+        for(uint i=0;i<users.length;i++){
+            address d0=users[i];
             (uint timeClaimed,uint timeJoined,uint wallet)=
             (block.timestamp-user[d0].lastClaimed,block.timestamp-user[d0].dateJoined,user[msg.sender].wallet);
             /*
