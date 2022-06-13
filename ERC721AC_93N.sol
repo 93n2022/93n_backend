@@ -99,26 +99,26 @@ contract ERC721AC_93N is ERC721AC{
         Getting uplines for payout
         */
         (address d1,address d2,address d3)=getUplines(msg.sender); 
-        _payment(_USDT,msg.sender,address(this),amount,0);
-        _payment4(_USDT,address(this),[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
-        _payment4(_TOKEN,address(this),[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],0);
+        _payment(_USDT,msg.sender,msg.sender,address(this),amount,0);
+        _payment4(_USDT,address(this),msg.sender,[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        _payment4(_TOKEN,address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
     }}
-    function _payment(address con,address from,address to,uint amt,uint status)private{
+    function _payment(address con,address from,address usr,address to,uint amt,uint status)private{
         /*
         Custom connection to the various token address
         Emit events for history
         */
         IERC20(con).transferFrom(from,to,amt);
-        emit Payout(from,to,amt,status);
+        emit Payout(usr,to,amt,status);
     }
-    function _payment4(address con,address from,address[4]memory to,uint[4]memory amt,uint status)private{unchecked{
+    function _payment4(address con,address from,address usr,address[4]memory to,uint[4]memory amt,uint status)private{unchecked{
         /*
         Payout loop of 4 iterations
         Exit fuction (for payment of USDT) if no address found
         */
         for(uint i=0;i<4;i++){
             if(to[i]==address(0))return;
-            _payment(con,from,to[i],amt[i],status);
+            _payment(con,from,usr,to[i],amt[i],status);
         }
     }}
     function Staking()external{unchecked{
@@ -141,7 +141,7 @@ contract ERC721AC_93N is ERC721AC{
                 if(timeClaimed>=1 hours){
                     uint amt=timeClaimed/730*user[d0].wallet*(user[d0].months==3?2:user[d0].months==6?3:4)/100;
                     (address d1,address d2,address d3)=getUplines(d0); 
-                    _payment4(_TOKEN,address(this),[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
+                    _payment4(_TOKEN,address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
                     user[d0].lastClaimed=block.timestamp;
                 }
             /*
@@ -153,7 +153,7 @@ contract ERC721AC_93N is ERC721AC{
                 if(timeJoined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
                 else wallet*=wallet*2/5/Split;
                 user[d0].wallet-=wallet;
-                _payment(_TOKEN,address(this),d0,wallet,3);
+                _payment(_TOKEN,address(this),address(this),d0,wallet,3);
             }
         }
     }}
