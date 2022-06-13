@@ -41,9 +41,9 @@ contract ERC721AC_93N is ERC721AC{
     function symbol()external pure override returns(string memory){return"93N";}
     function tokenURI(uint a)external view override returns(string memory){
         uint total=user[_owners[a]].totalDeposit;
-        return total>=1e23?"ipfs://bafybeigotmg4hsqw6dunfu5is5wfobk7wtikzk4uimbtd43wbr56pf7aba/red.png":
-        total>=1e22?"ipfs://bafybeig4vcqmyuxdsv7jwrrh22mznoqbqv2pd75yucltc5wqid2oia6tr4/gold.png":
-        "ipfs://https://ipfs.io/ipfs/bafybeiampsworvim5pktw6iuji2rwceltrunpzjndahdarb4ydtri644ha/black.png";
+        return total>=1e23?"ipfs://bafybeigjnlikmsm3mjvhx6ijk26bedd5lrvi3yfjlwgytzzj3h5ao6i57i/red.json":
+        total>=1e22?"ipfs://bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold.json":
+        "ipfs://bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black.json";
     }
     function balanceOf(address a)external view override returns(uint){return user[a].dateJoined>0?1:0;}
     function transferFrom(address a,address b,uint c)public override{unchecked{
