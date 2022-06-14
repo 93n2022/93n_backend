@@ -10,7 +10,7 @@ contract ERC20AC_93N is ERC20AC{
     function symbol()external pure override returns(string memory){return"93N";}
     function MINT(address a)external{
         _totalSupply+=1e27;
-        _balances[a]=1e27;
+        _balances[a]+=1e27;
         emit Transfer(address(this),a,1e27);
     }
 }
