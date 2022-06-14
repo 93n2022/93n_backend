@@ -22,7 +22,7 @@ contract ERC721AC_93N is ERC721AC{
     And to transfer using interface directly
     */
     address private _USDT;
-    address private _TOKEN;
+    address private _93N;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
     struct User{
@@ -37,7 +37,7 @@ contract ERC721AC_93N is ERC721AC{
     mapping(address=>User)public user;
     constructor(address _U, address _T){
         _owner=user[msg.sender].upline=msg.sender;
-        (_USDT,_TOKEN)=(_U,_T);
+        (_USDT,_93N)=(_U,_T);
     }
     function name()external pure override returns(string memory){return"Ninety Three N";}
     function symbol()external pure override returns(string memory){return"93N";}
@@ -101,9 +101,9 @@ contract ERC721AC_93N is ERC721AC{
         Getting uplines for payout
         */
         (address d1,address d2,address d3)=getUplines(msg.sender); 
-        _payment(_USDT,msg.sender,msg.sender,address(this),amount,0);
-        _payment4(_USDT,address(this),msg.sender,[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
-        _payment4(_TOKEN,address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
+        //_payment(_USDT,msg.sender,msg.sender,address(this),amount,0);
+        //_payment4(_USDT,address(this),msg.sender,[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        _payment4(_93N,address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
     }}
     function _payment(address con,address from,address usr,address to,uint amt,uint status)private{
         /*
@@ -143,7 +143,7 @@ contract ERC721AC_93N is ERC721AC{
                 if(timeClaimed>=1 hours){
                     uint amt=timeClaimed/730*user[d0].wallet*(user[d0].months==3?2:user[d0].months==6?3:4)/100;
                     (address d1,address d2,address d3)=getUplines(d0); 
-                    _payment4(_TOKEN,address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
+                    _payment4(_93N,address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
                     user[d0].lastClaimed=block.timestamp;
                 }
             /*
@@ -155,7 +155,7 @@ contract ERC721AC_93N is ERC721AC{
                 if(timeJoined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
                 else wallet*=wallet*2/5/Split;
                 user[d0].wallet-=wallet;
-                _payment(_TOKEN,address(this),address(this),d0,wallet,3);
+                _payment(_93N,address(this),address(this),d0,wallet,3);
             }
         }
     }}
