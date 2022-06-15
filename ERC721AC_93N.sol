@@ -4,6 +4,16 @@
 1. If user redeposit before his tenure ends, can the total amount be override?
 2. Or each purchase must be in USDT and is a unique piece, if so the any limit?
 3. Must be weekly pay out? If that way I will add variables to put out
+
+Create seperate nft contract for each deposit
+Remove 93N commission upon joining
+Stacking for uplines tie with depositor's month
+Delete nft after cashing out
+Need nft to participate
+5/10/15% prorate to 3/6/9 months 
+redeposit to keep alive
+
+web3 - open up 1st level first, then info only open up accordingly
 ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 import"https://github.com/aloycwl/ERC_AC/blob/main/ERC721AC/ERC721AC.sol";
