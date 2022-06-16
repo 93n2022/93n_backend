@@ -2,7 +2,6 @@
 [DEPLOYMENT] CHANGE TOKEN ADDRESSES
 
 Delete nft after cashing out -owners -cidtypes -packages -popPackages
-Need nft to participate
 5/10/15% prorate to 3/6/9 months
 
 web3 - open up 1st level first, then info only open up accordingly
@@ -127,6 +126,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     function Deposit(address referral,uint amount,uint months)external{unchecked{
         require(referral!=msg.sender);
         require(user[referral].upline!=address(0));
+        require(months==3||months==6||months==9);
+        require(amount>=1e21);
         /*
         Connect to PanCakeSwap to get the live price
         Issue the number of tokens in equivalent to USDT
@@ -151,12 +152,15 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         emit Transfer(address(0),msg.sender,_count);
         /*
         Uplines & tech to get USDT 5%, 3%, 2% & tech 1%
-        Uplines to get tokens 5%, 10%, 15%
+        USDT to be prorated according to months
         Getting uplines for payout
         */
-        //(address d1,address d2,address d3)=getUplines(msg.sender); 
-        //_payment(_A[1],msg.sender,msg.sender,address(this),amount,0);
-        //_payment4(_A[1],address(this),msg.sender,[d1,d2,d3,_A[4]],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        /* TEMP DISABLED FOR TESTING
+        (address d1,address d2,address d3)=getUplines(msg.sender); 
+        _payment(_A[1],msg.sender,msg.sender,address(this),amount,0);
+        amount*=(months/9);
+        _payment4(_A[1],address(this),msg.sender,[d1,d2,d3,_A[4]],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        /**/
     }}
     function _payment(address con,address from,address usr,address to,uint amt,uint status)private{
         /*
