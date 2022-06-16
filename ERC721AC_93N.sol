@@ -3,8 +3,7 @@
 
 Delete nft after cashing out -owners -cidtypes -packages -popPackages
 Need nft to participate
-5/10/15% prorate to 3/6/9 months 
-redeposit to keep alive
+5/10/15% prorate to 3/6/9 months
 
 web3 - open up 1st level first, then info only open up accordingly
 ***/
