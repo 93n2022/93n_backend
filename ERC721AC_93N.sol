@@ -59,9 +59,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint lastClaimed;
         uint dateJoined;
         uint months;
-        uint totalDeposit;
+        uint deposit;
         address owner;
-        address _tokenApprovals;
     }
     uint public Split;
     uint private _count;
@@ -71,7 +70,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     address private _93N;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
-    mapping(uint=>Packages)private packages;
+    mapping(uint=>Packages)private _packages;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>User)private user;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
@@ -83,7 +82,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         return a==type(IERC721).interfaceId||a==type(IERC721Metadata).interfaceId;
     }
     function ownerOf(uint a)public view override returns(address){
-        return packages[a].owner;
+        return _packages[a].owner;
     }
     function owner()external view returns(address){
         return _owner;
@@ -120,25 +119,25 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     function tokenURI(uint a)external view override returns(string memory){
         return string(abi.encodePacked("ipfs://",
-        packages[a].totalDeposit>1e23?"bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black":
-        packages[a].totalDeposit>1e22?"bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold":
+        _packages[a].deposit>1e23?"bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black":
+        _packages[a].deposit>1e22?"bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold":
         "bafybeigjnlikmsm3mjvhx6ijk26bedd5lrvi3yfjlwgytzzj3h5ao6i57i/red",
         ".json"));
     }
     function transferFrom(address a,address b,uint c)public override{unchecked{
-        require(a==packages[c].owner||getApproved(c)==a||isApprovedForAll(packages[c].owner,a));
+        require(a==_packages[c].owner||getApproved(c)==a||isApprovedForAll(_packages[c].owner,a));
         /*
         Entire user will be duplicated to the new user where
         The old user will be deleted
         Enum will be updated too for each week's payout
         */
-        (_tokenApprovals[c]=address(0),packages[c].owner=b,user[b]=user[a]);
+        (_tokenApprovals[c]=address(0),_packages[c].owner=b,user[b]=user[a]);
         delete user[a];
         for(uint i=0;i<users.length;i++)if(users[i]==a){
             users[i]=users[users.length-1];
             users.pop();
         }
-        emit Approval(packages[c].owner,b,c);
+        emit Approval(_packages[c].owner,b,c);
         emit Transfer(a,b,c);
     }}
     function Deposit(address referral,uint amount,uint months)external{unchecked{
@@ -153,10 +152,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (pair[0],pair[1])=(_TOKEN,_USDT);
         uint[]memory currentPrice=IPCSV2(_PCSV2).getAmountsOut(amount,pair);
         (uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);*/
-        (uint tokens,User storage u)=(amount,user[msg.sender]);
-        (u.months=months,u.wallet=tokens,u.dateJoined=u.lastClaimed=block.timestamp,u.deposit+=amount);
+        _count++;
+        (uint tokens,User storage u,Packages storage p)=(amount,user[msg.sender],_packages[_count]);
+        
+        (p.months=months,p.wallet=tokens,p.dateJoined=p.lastClaimed=block.timestamp,p.deposit=amount,p.owner=msg.sender);
         /*
-        Only mint and set variable when user is new
         Only set upline and downline when user is new
         Add user into enumUser for counting purposes
         */
@@ -165,14 +165,13 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             user[referral].downline.push(msg.sender);
             users.push(msg.sender);
         }
-        (packages[_count].owner=msg.sender,_count++);
         emit Transfer(address(0),msg.sender,_count);
         /*
         Uplines & tech to get USDT 5%, 3%, 2% & tech 1%
         Uplines to get tokens 5%, 10%, 15%
         Getting uplines for payout
         */
-        (address d1,address d2,address d3)=getUplines(msg.sender); 
+        //(address d1,address d2,address d3)=getUplines(msg.sender); 
         //_payment(_USDT,msg.sender,msg.sender,address(this),amount,0);
         //_payment4(_USDT,address(this),msg.sender,[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
     }}
@@ -196,11 +195,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }}
     function Staking()external{unchecked{
         /*
-        Go through every users and pay them and their upline accordingly
+        Go through every contract and pay them and their upline accordingly
         31,536,000 seconds a year=exactly 730 hours
         Get last claim and time joined to accurately payout
-        */
-        for(uint i=0;i<users.length;i++){
+        *
+        for(uint i=0;i<_count;i++){
             address d0=users[i];
             (uint timeClaimed,uint timeJoined,uint wallet)=
             (block.timestamp-user[d0].lastClaimed,block.timestamp-user[d0].dateJoined,user[msg.sender].wallet);
@@ -209,7 +208,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             Pro-rated payment in case this function is being called more than once a week
             Token payment direct to wallet in term of 15%, 10%, 5%
             Update user last claim if claimed
-            */
+            *
             if(timeJoined<(user[d0].months+1)*730 hours){
                 if(timeClaimed>=1 hours){
                     uint amt=timeClaimed/730*user[d0].wallet*(user[d0].months==3?2:user[d0].months==6?3:4)/100;
@@ -221,7 +220,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             If user decided not to continue
             Release to 4-3-3 in month
             Months are divided if split is modified
-            */
+            *
             }else if(wallet>0){
                 if(timeJoined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
                 else wallet*=wallet*2/5/Split;
@@ -230,7 +229,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 //Pay the uplines commission too
                 //_payment4(_93N,address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
             }
-        }
+        }*/
     }}
     function SetSplit(uint num)external{
         /*
