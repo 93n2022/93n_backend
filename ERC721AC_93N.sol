@@ -5,7 +5,6 @@ Delete nft after cashing out -owners -cidtypes -packages
 Need nft to participate
 5/10/15% prorate to 3/6/9 months 
 redeposit to keep alive
-transferfrom upline and downline to be changed
 
 web3 - open up 1st level first, then info only open up accordingly
 ***/
@@ -119,8 +118,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         */
         require(a==_packages[c].owner||getApproved(c)==a||isApprovedForAll(_packages[c].owner,a));
         (_tokenApprovals[c],_packages[c].owner)=(address(0),b);
-        //pop user token
-        //push user token
+        user[b].packages.push(c);
+        popPackages(a,c);
         emit Approval(_packages[c].owner,b,c);
         emit Transfer(a,b,c);
     }}
@@ -254,6 +253,12 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 (c[d2Length]=c1[j],d2Length++);
                 for(uint k=0;k<user[c1[j]].downline.length;k++)(d[d3Length]=user[c1[j]].downline[k],d3Length++);
             }
+        }
+    }}
+    function popPackages(address a,uint b)private{unchecked{
+        for(uint i=0;i<user[a].packages.length;i++)if(user[a].packages[i]==b){
+            user[a].packages[i]=user[a].packages[user[a].packages.length-1];
+            user[a].packages.pop();
         }
     }}
 }
