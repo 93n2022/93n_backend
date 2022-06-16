@@ -8,7 +8,7 @@
 Create seperate nft contract for each deposit
 Remove 93N commission upon joining
 Stacking for uplines tie with depositor's month
-Delete nft after cashing out
+Delete nft after cashing out -owners -cidtypes -packages
 Need nft to participate
 5/10/15% prorate to 3/6/9 months 
 redeposit to keep alive
@@ -69,6 +69,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     address private _93N;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
+    mapping(uint=>uint)private _cidType;
     mapping(uint=>address)private _owners;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>User)private user;
@@ -117,10 +118,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         return user[a].packages.length;
     }
     function tokenURI(uint a)external view override returns(string memory){
-        uint total=user[_owners[a]].deposit;
-        return total>=1e23?"ipfs://bafybeigjnlikmsm3mjvhx6ijk26bedd5lrvi3yfjlwgytzzj3h5ao6i57i/red.json":
-        total>=1e22?"ipfs://bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold.json":
-        "ipfs://bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black.json";
+        return string(abi.encodePacked("ipfs://",
+        _cidType[a]>1?"bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black":
+        _cidType[a]>0?"bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold":
+        "bafybeigjnlikmsm3mjvhx6ijk26bedd5lrvi3yfjlwgytzzj3h5ao6i57i/red",
+        ".json"));
     }
     function transferFrom(address a,address b,uint c)public override{unchecked{
         /*
