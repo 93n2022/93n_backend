@@ -35,6 +35,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     The status to be emitted 0-in USDT, 1-in 93N, 2-stake, 3-out
     Require all the addresses to get live price from PanCakeSwap
     And to transfer using interface directly
+    _A: 0-owner, 1-usdt, 2-93n, 3-pcsv3, 4-tech
     */
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status);
     struct User{
@@ -52,18 +53,14 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     uint public Split;
     uint private _count;
-    address private _owner;
-    address private _USDT;
-    address private _93N;
-    address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
-    address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
+    mapping(uint=>address)private _A;
     mapping(uint=>Packages)private _packages;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>User)private user;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
     constructor(address _U,address _T){
-        _owner=user[msg.sender].upline=msg.sender;
-        (_USDT,_93N)=(_U,_T);
+        (_A[0]=user[msg.sender].upline=msg.sender,_A[1]=_U,_A[2]=_T,
+        _A[3]=0xD99D1c33F9fC3444f8101754aBC46c52416550D1,_A[4]=0xdD870fA1b7C4700F2BD7f44238821C26f7392148);
     }
     function supportsInterface(bytes4 a)external pure returns(bool){
         return a==type(IERC721).interfaceId||a==type(IERC721Metadata).interfaceId;
@@ -72,7 +69,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         return _packages[a].owner;
     }
     function owner()external view returns(address){
-        return _owner;
+        return _A[0];
     }
     function approve(address a,uint b)external override{
         require(msg.sender==ownerOf(b)||isApprovedForAll(ownerOf(b),msg.sender));
@@ -132,8 +129,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Initiate new user
         */
         /*address[]memory pair=new address[](2); 
-        (pair[0],pair[1])=(_TOKEN,_USDT);
-        uint[]memory currentPrice=IPCSV2(_PCSV2).getAmountsOut(amount,pair);
+        (pair[0],pair[1])=(_TOKEN,_A[1]);
+        uint[]memory currentPrice=IPCSV2(_A[3]).getAmountsOut(amount,pair);
         (uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);*/
         _count++;
         (uint tokens,Packages storage p)=(amount,_packages[_count]);
@@ -144,7 +141,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Add user into enumUser for counting purposes
         */
         if(user[msg.sender].upline==address(0)){
-            user[msg.sender].upline=referral==address(0)?_owner:referral;
+            user[msg.sender].upline=referral==address(0)?_A[0]:referral;
             user[referral].downline.push(msg.sender);
         }
         emit Transfer(address(0),msg.sender,_count);
@@ -154,8 +151,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Getting uplines for payout
         */
         //(address d1,address d2,address d3)=getUplines(msg.sender); 
-        //_payment(_USDT,msg.sender,msg.sender,address(this),amount,0);
-        //_payment4(_USDT,address(this),msg.sender,[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        //_payment(_A[1],msg.sender,msg.sender,address(this),amount,0);
+        //_payment4(_A[1],address(this),msg.sender,[d1,d2,d3,_A[4]],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
     }}
     function _payment(address con,address from,address usr,address to,uint amt,uint status)private{
         /*
@@ -196,7 +193,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                     if(timeLasped>=1 hours){
                         uint amt=timeLasped/730 hours*_packages[i].wallet*(_packages[i].months/3+1)/100;
                         (address d1,address d2,address d3)=getUplines(d0);
-                        _payment4(_93N,address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
+                        _payment4(_A[2],address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
                         _packages[i].claimed=block.timestamp;
                     }
                 /*
@@ -208,9 +205,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                     //if(timeJoined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
                     //else wallet*=wallet*2/5/Split;
                     //user[d0].wallet-=wallet;
-                    _payment(_93N,address(this),address(this),d0,wallet,3);
+                    _payment(_A[2],address(this),address(this),d0,wallet,3);
                     //Pay the uplines commission too
-                    //_payment4(_93N,address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
+                    //_payment4(_A[2],address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
                 }
             }
         }
@@ -219,7 +216,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         /*
         Modifying the split to slow down the withdrawal
         */
-        require(msg.sender==_owner);
+        require(msg.sender==_A[0]);
         Split=num;
     }
     function getUplines(address a)private view returns(address d1,address d2,address d3){
