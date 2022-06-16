@@ -44,8 +44,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     struct Packages{
         uint wallet;
-        uint lastClaimed;
-        uint dateJoined;
+        uint claimed;
+        uint joined;
         uint months;
         uint deposit;
         address owner;
@@ -141,15 +141,15 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint[]memory currentPrice=IPCSV2(_PCSV2).getAmountsOut(amount,pair);
         (uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);*/
         _count++;
-        (uint tokens,User storage u,Packages storage p)=(amount,user[msg.sender],_packages[_count]);
-        
-        (p.months=months,p.wallet=tokens,p.dateJoined=p.lastClaimed=block.timestamp,p.deposit=amount,p.owner=msg.sender);
+        (uint tokens,Packages storage p)=(amount,_packages[_count]);
+        (p.months=months,p.wallet=tokens,p.joined=p.claimed=block.timestamp,p.deposit=amount,p.owner=msg.sender);
+        user[msg.sender].packages.push(_count);
         /*
         Only set upline and downline when user is new
         Add user into enumUser for counting purposes
         */
-        if(u.upline==address(0)){
-            u.upline=referral==address(0)?_owner:referral;
+        if(user[msg.sender].upline==address(0)){
+            user[msg.sender].upline=referral==address(0)?_owner:referral;
             user[referral].downline.push(msg.sender);
             users.push(msg.sender);
         }
@@ -187,35 +187,37 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         31,536,000 seconds a year=exactly 730 hours per month
         Get last claim and time joined to accurately payout
         */
-        for(uint i=0;i<_count;i++)if(_packages[i].wallet>0){
-            address d0=users[i];
-            (uint timeLasped,uint timeJoined,uint wallet)=(block.timestamp-_packages[i].lastClaimed,
-            block.timestamp-_packages[i].dateJoined,_packages[i].wallet);
-            /*
-            As long as user still in contract
-            Pro-rated payment in case this function is being called more than once a week
-            Token payment direct to wallet in term of 15%, 10%, 5%
-            Update user last claim if claimed
-            */
-            if(timeJoined+_packages[i].months*730 hours<=block.timestamp){
-                if(timeLasped>=1 hours){
-                    uint amt=timeLasped/730 hours*_packages[i].wallet*(_packages[i].months/3+1)/100;
-                    (address d1,address d2,address d3)=getUplines(d0);
-                    _payment4(_93N,address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
-                    _packages[i].lastClaimed=block.timestamp;
+        for(uint i=0;i<_count;i++){
+            uint wallet=_packages[i].wallet;
+            if(wallet>0){
+                (address d0,uint timeLasped,uint timeJoined)=(_packages[i].owner,
+                block.timestamp-_packages[i].claimed,block.timestamp-_packages[i].joined);
+                /*
+                As long as user still in contract
+                Pro-rated payment in case this function is being called more than once a week
+                Token payment direct to wallet in term of 15%, 10%, 5%
+                Update user last claim if claimed
+                */
+                if(timeJoined+_packages[i].months*730 hours<=block.timestamp){
+                    if(timeLasped>=1 hours){
+                        uint amt=timeLasped/730 hours*_packages[i].wallet*(_packages[i].months/3+1)/100;
+                        (address d1,address d2,address d3)=getUplines(d0);
+                        _payment4(_93N,address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
+                        _packages[i].claimed=block.timestamp;
+                    }
+                /*
+                Contract auto expire upon due
+                Release to 4-3-3 in month
+                Months are divided if split is modified
+                */
+                }else if(wallet>0){
+                    //if(timeJoined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
+                    //else wallet*=wallet*2/5/Split;
+                    //user[d0].wallet-=wallet;
+                    _payment(_93N,address(this),address(this),d0,wallet,3);
+                    //Pay the uplines commission too
+                    //_payment4(_93N,address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
                 }
-            /*
-            If user decided not to continue
-            Release to 4-3-3 in month
-            Months are divided if split is modified
-            */
-            }else if(wallet>0){
-                //if(timeJoined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
-                //else wallet*=wallet*2/5/Split;
-                //user[d0].wallet-=wallet;
-                _payment(_93N,address(this),address(this),d0,wallet,3);
-                //Pay the uplines commission too
-                //_payment4(_93N,address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
             }
         }
     }}
