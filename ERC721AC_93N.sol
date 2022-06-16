@@ -5,6 +5,7 @@ Delete nft after cashing out -owners -cidtypes -packages
 Need nft to participate
 5/10/15% prorate to 3/6/9 months 
 redeposit to keep alive
+transferfrom upline and downline to be changed
 
 web3 - open up 1st level first, then info only open up accordingly
 ***/
@@ -52,7 +53,6 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     uint public Split;
     uint private _count;
-    address[]private users;
     address private _owner;
     address private _USDT;
     address private _93N;
@@ -62,7 +62,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>User)private user;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
-    constructor(address _U, address _T){
+    constructor(address _U,address _T){
         _owner=user[msg.sender].upline=msg.sender;
         (_USDT,_93N)=(_U,_T);
     }
@@ -113,18 +113,14 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         ".json"));
     }
     function transferFrom(address a,address b,uint c)public override{unchecked{
-        require(a==_packages[c].owner||getApproved(c)==a||isApprovedForAll(_packages[c].owner,a));
         /*
-        Entire user will be duplicated to the new user where
+        Entire user will be duplicated to the new user
         The old user will be deleted
-        Enum will be updated too for each week's payout
         */
-        (_tokenApprovals[c]=address(0),_packages[c].owner=b,user[b]=user[a]);
-        delete user[a];
-        for(uint i=0;i<users.length;i++)if(users[i]==a){
-            users[i]=users[users.length-1];
-            users.pop();
-        }
+        require(a==_packages[c].owner||getApproved(c)==a||isApprovedForAll(_packages[c].owner,a));
+        (_tokenApprovals[c],_packages[c].owner)=(address(0),b);
+        //pop user token
+        //push user token
         emit Approval(_packages[c].owner,b,c);
         emit Transfer(a,b,c);
     }}
@@ -151,7 +147,6 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         if(user[msg.sender].upline==address(0)){
             user[msg.sender].upline=referral==address(0)?_owner:referral;
             user[referral].downline.push(msg.sender);
-            users.push(msg.sender);
         }
         emit Transfer(address(0),msg.sender,_count);
         /*
