@@ -166,11 +166,12 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         */
         if(u.upline==address(0)){
             u.upline=referral==address(0)?_owner:referral;
-            (_owners[_count]=msg.sender,_count++);
             user[referral].downline.push(msg.sender);
             users.push(msg.sender);
-            emit Transfer(address(0),msg.sender,_count);
         }
+        (_owners[_count]=msg.sender,_count++);
+        _cidType[_count]=amount>1e23?2:amount>1e22?1:0;
+        emit Transfer(address(0),msg.sender,_count);
         /*
         Uplines & tech to get USDT 5%, 3%, 2% & tech 1%
         Uplines to get tokens 5%, 10%, 15%
