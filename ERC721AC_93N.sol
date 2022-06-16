@@ -38,10 +38,10 @@ interface IERC721Metadata{
 interface IERC20{function transferFrom(address,address,uint)external;function testMint()external;}
 interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
 contract ERC721AC_93N is IERC721,IERC721Metadata{
-    address internal _owner;
-    mapping(uint=>address)internal _owners;
-    mapping(uint=>address)internal _tokenApprovals;
-    mapping(address=>mapping(address=>bool))internal _operatorApprovals;
+    address private _owner;
+    mapping(uint=>address)private _owners;
+    mapping(uint=>address)private _tokenApprovals;
+    mapping(address=>mapping(address=>bool))private _operatorApprovals;
     /*
     The status to be emitted 0-in USDT, 1-in 93N, 2-stake, 3-out
     Require all the addresses to get live price from PanCakeSwap
