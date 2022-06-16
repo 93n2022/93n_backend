@@ -38,23 +38,12 @@ interface IERC721Metadata{
 interface IERC20{function transferFrom(address,address,uint)external;function testMint()external;}
 interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
 contract ERC721AC_93N is IERC721,IERC721Metadata{
-    address private _owner;
-    mapping(uint=>address)private _owners;
-    mapping(uint=>address)private _tokenApprovals;
-    mapping(address=>mapping(address=>bool))private _operatorApprovals;
     /*
     The status to be emitted 0-in USDT, 1-in 93N, 2-stake, 3-out
     Require all the addresses to get live price from PanCakeSwap
     And to transfer using interface directly
     */
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status);
-    uint public Split;
-    uint private _count;
-    address[]private users;
-    address private _USDT;
-    address private _93N;
-    //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
-    address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
     struct User{
         address upline;
         address[]downline;
@@ -72,7 +61,18 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint months;
         uint totalDeposit;
     }
-    mapping(address=>User)public user;
+    uint public Split;
+    uint private _count;
+    address[]private users;
+    address private _owner;
+    address private _USDT;
+    address private _93N;
+    //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
+    address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
+    mapping(uint=>address)private _owners;
+    mapping(uint=>address)private _tokenApprovals;
+    mapping(address=>User)private user;
+    mapping(address=>mapping(address=>bool))private _operatorApprovals;
     constructor(address _U, address _T){
         _owner=user[msg.sender].upline=msg.sender;
         (_USDT,_93N)=(_U,_T);
