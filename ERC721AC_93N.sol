@@ -186,8 +186,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Go through every contract and pay them and their upline accordingly
         31,536,000 seconds a year=exactly 730 hours
         Get last claim and time joined to accurately payout
-        *
-        for(uint i=0;i<_count;i++){
+        */
+        for(uint i=0;i<_count;i++)if(_packages[i].wallet>0){
             address d0=users[i];
             (uint timeClaimed,uint timeJoined,uint wallet)=
             (block.timestamp-user[d0].lastClaimed,block.timestamp-user[d0].dateJoined,user[msg.sender].wallet);
@@ -196,7 +196,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             Pro-rated payment in case this function is being called more than once a week
             Token payment direct to wallet in term of 15%, 10%, 5%
             Update user last claim if claimed
-            *
+            */
             if(timeJoined<(user[d0].months+1)*730 hours){
                 if(timeClaimed>=1 hours){
                     uint amt=timeClaimed/730*user[d0].wallet*(user[d0].months==3?2:user[d0].months==6?3:4)/100;
@@ -208,7 +208,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             If user decided not to continue
             Release to 4-3-3 in month
             Months are divided if split is modified
-            *
+            */
             }else if(wallet>0){
                 if(timeJoined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
                 else wallet*=wallet*2/5/Split;
@@ -217,7 +217,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 //Pay the uplines commission too
                 //_payment4(_93N,address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
             }
-        }*/
+        }
     }}
     function SetSplit(uint num)external{
         /*
