@@ -38,6 +38,14 @@ contract ERC721AC_93N is ERC721AC{
     struct User{
         address upline;
         address[]downline;
+        /*uint wallet;
+        uint lastClaimed;
+        uint dateJoined;
+        uint months;
+        uint deposit;*/
+        Packages[]packages;
+    }
+    struct Packages{
         uint wallet;
         uint lastClaimed;
         uint dateJoined;
@@ -52,7 +60,7 @@ contract ERC721AC_93N is ERC721AC{
     function name()external pure override returns(string memory){return"Ninety Three N";}
     function symbol()external pure override returns(string memory){return"93N";}
     function tokenURI(uint a)external view override returns(string memory){
-        uint total=user[_owners[a]].totalDeposit;
+        uint total=user[_owners[a]].deposit;
         return total>=1e23?"ipfs://bafybeigjnlikmsm3mjvhx6ijk26bedd5lrvi3yfjlwgytzzj3h5ao6i57i/red.json":
         total>=1e22?"ipfs://bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold.json":
         "ipfs://bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black.json";
@@ -92,7 +100,7 @@ contract ERC721AC_93N is ERC721AC{
         uint[]memory currentPrice=IPCSV2(_PCSV2).getAmountsOut(amount,pair);
         (uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);*/
         (uint tokens,User storage u)=(amount,user[msg.sender]);
-        (u.months=months,u.wallet=tokens,u.dateJoined=u.lastClaimed=block.timestamp,u.totalDeposit+=amount);
+        (u.months=months,u.wallet=tokens,u.dateJoined=u.lastClaimed=block.timestamp,u.deposit+=amount);
         /*
         Only mint and set variable when user is new
         Only set upline and downline when user is new
@@ -152,7 +160,7 @@ contract ERC721AC_93N is ERC721AC{
             if(timeJoined<(user[d0].months+1)*730 hours){
                 if(timeClaimed>=1 hours){
                     uint amt=timeClaimed/730*user[d0].wallet*(user[d0].months==3?2:user[d0].months==6?3:4)/100;
-                    (address d1,address d2,address d3)=getUplines(d0); 
+                    (address d1,address d2,address d3)=getUplines(d0);
                     _payment4(_93N,address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
                     user[d0].lastClaimed=block.timestamp;
                 }
