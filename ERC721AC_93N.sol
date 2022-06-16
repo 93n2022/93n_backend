@@ -52,7 +52,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint dateJoined;
         uint months;
         uint deposit;
-        Packages[]packages;
+        uint[]packages;
     }
     struct Packages{
         uint wallet;
@@ -60,6 +60,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint dateJoined;
         uint months;
         uint totalDeposit;
+        address owner;
     }
     uint public Split;
     uint private _count;
@@ -69,8 +70,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     address private _93N;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
     address private constant _TECH=0xdD870fA1b7C4700F2BD7f44238821C26f7392148;
-    mapping(uint=>uint)private _cidType;
-    mapping(uint=>address)private _owners;
+    mapping(uint=>Packages)private packages;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>User)private user;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
@@ -82,7 +82,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         return a==type(IERC721).interfaceId||a==type(IERC721Metadata).interfaceId;
     }
     function ownerOf(uint a)public view override returns(address){
-        return _owners[a]; 
+        return packages[a].owner;
     }
     function owner()external view returns(address){
         return _owner;
@@ -119,8 +119,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     function tokenURI(uint a)external view override returns(string memory){
         return string(abi.encodePacked("ipfs://",
-        _cidType[a]>1?"bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black":
-        _cidType[a]>0?"bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold":
+        packages[a].totalDeposit>1e23?"bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black":
+        packages[a].totalDeposit>1e22?"bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold":
         "bafybeigjnlikmsm3mjvhx6ijk26bedd5lrvi3yfjlwgytzzj3h5ao6i57i/red",
         ".json"));
     }
@@ -129,20 +129,20 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Normal ERC721 token applies
         User can only transfer to not an existing user
         */
-        require(a==_owners[c]||getApproved(c)==a||isApprovedForAll(_owners[c],a));
+        require(a==packages[c].owner||getApproved(c)==a||isApprovedForAll(packages[c].owner,a));
         require(user[b].dateJoined<1);
         /*
         Entire user will be duplicated to the new user where
         The old user will be deleted
         Enum will be updated too for each week's payout
         */
-        (_tokenApprovals[c]=address(0),_owners[c]=b,user[b]=user[a]);
+        (_tokenApprovals[c]=address(0),packages[c].owner=b,user[b]=user[a]);
         delete user[a];
         for(uint i=0;i<users.length;i++)if(users[i]==a){
             users[i]=users[users.length-1];
             users.pop();
         }
-        emit Approval(_owners[c],b,c);
+        emit Approval(packages[c].owner,b,c);
         emit Transfer(a,b,c);
     }}
     function Deposit(address referral,uint amount,uint months)external{unchecked{
@@ -169,8 +169,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             user[referral].downline.push(msg.sender);
             users.push(msg.sender);
         }
-        (_owners[_count]=msg.sender,_count++);
-        _cidType[_count]=amount>1e23?2:amount>1e22?1:0;
+        (packages[_count].owner=msg.sender,_count++);
         emit Transfer(address(0),msg.sender,_count);
         /*
         Uplines & tech to get USDT 5%, 3%, 2% & tech 1%
