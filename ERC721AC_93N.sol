@@ -16,21 +16,41 @@ redeposit to keep alive
 web3 - open up 1st level first, then info only open up accordingly
 ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
-import"https://github.com/aloycwl/ERC_AC/blob/main/ERC721AC/ERC721AC.sol";
+interface IERC721{
+    event Transfer(address indexed from,address indexed to,uint indexed tokenId);
+    event Approval(address indexed owner,address indexed approved,uint indexed tokenId);
+    event ApprovalForAll(address indexed owner,address indexed operator,bool approved);
+    function balanceOf(address)external view returns(uint);
+    function ownerOf(uint)external view returns(address);
+    function safeTransferFrom(address,address,uint)external;
+    function transferFrom(address,address,uint)external;
+    function approve(address,uint)external;
+    function getApproved(uint)external view returns(address);
+    function setApprovalForAll(address,bool)external;
+    function isApprovedForAll(address,address)external view returns(bool);
+    function safeTransferFrom(address,address,uint,bytes calldata)external;
+}
+interface IERC721Metadata{
+    function name()external view returns(string memory);
+    function symbol()external view returns(string memory);
+    function tokenURI(uint)external view returns(string memory);
+}
 interface IERC20{function transferFrom(address,address,uint)external;function testMint()external;}
 interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
-contract ERC721AC_93N is ERC721AC{
+contract ERC721AC_93N is IERC721,IERC721Metadata{
+    address internal _owner;
+    mapping(uint=>address)internal _owners;
+    mapping(uint=>address)internal _tokenApprovals;
+    mapping(address=>mapping(address=>bool))internal _operatorApprovals;
     /*
     The status to be emitted 0-in USDT, 1-in 93N, 2-stake, 3-out
+    Require all the addresses to get live price from PanCakeSwap
+    And to transfer using interface directly
     */
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status);
     uint public Split;
     uint private _count;
     address[]private users;
-    /*
-    Require all the addresses to get live price from PanCakeSwap
-    And to transfer using interface directly
-    */
     address private _USDT;
     address private _93N;
     //address private constant _PCSV2=0xD99D1c33F9fC3444f8101754aBC46c52416550D1;
@@ -38,11 +58,11 @@ contract ERC721AC_93N is ERC721AC{
     struct User{
         address upline;
         address[]downline;
-        /*uint wallet;
+        uint wallet;
         uint lastClaimed;
         uint dateJoined;
         uint months;
-        uint deposit;*/
+        uint deposit;
         Packages[]packages;
     }
     struct Packages{
@@ -57,15 +77,51 @@ contract ERC721AC_93N is ERC721AC{
         _owner=user[msg.sender].upline=msg.sender;
         (_USDT,_93N)=(_U,_T);
     }
-    function name()external pure override returns(string memory){return"Ninety Three N";}
-    function symbol()external pure override returns(string memory){return"93N";}
+    function supportsInterface(bytes4 a)external pure returns(bool){
+        return a==type(IERC721).interfaceId||a==type(IERC721Metadata).interfaceId;
+    }
+    function ownerOf(uint a)public view override returns(address){
+        return _owners[a]; 
+    }
+    function owner()external view returns(address){
+        return _owner;
+    }
+    function approve(address a,uint b)external override{
+        require(msg.sender==ownerOf(b)||isApprovedForAll(ownerOf(b),msg.sender));
+        _tokenApprovals[b]=a;
+        emit Approval(ownerOf(b),a,b);
+    }
+    function getApproved(uint a)public view override returns(address){
+        return _tokenApprovals[a];
+    }
+    function setApprovalForAll(address a,bool b)external override{
+        _operatorApprovals[msg.sender][a]=b;
+        emit ApprovalForAll(msg.sender,a,b);
+    }
+    function isApprovedForAll(address a,address b)public view override returns(bool){
+        return _operatorApprovals[a][b];
+    }
+    function safeTransferFrom(address a,address b,uint c)external override{
+        transferFrom(a,b,c);
+    }
+    function safeTransferFrom(address a,address b,uint c,bytes memory)external override{
+        transferFrom(a,b,c);
+    }
+    function name()external pure override returns(string memory){
+        return"Ninety Three N";
+    }
+    function symbol()external pure override returns(string memory){
+        return"93N";
+    }
+    function balanceOf(address a)external view override returns(uint){
+        return user[a].packages.length;
+    }
     function tokenURI(uint a)external view override returns(string memory){
         uint total=user[_owners[a]].deposit;
         return total>=1e23?"ipfs://bafybeigjnlikmsm3mjvhx6ijk26bedd5lrvi3yfjlwgytzzj3h5ao6i57i/red.json":
         total>=1e22?"ipfs://bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold.json":
         "ipfs://bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black.json";
     }
-    function balanceOf(address a)external view override returns(uint){return user[a].dateJoined>0?1:0;}
     function transferFrom(address a,address b,uint c)public override{unchecked{
         /*
         Normal ERC721 token applies
