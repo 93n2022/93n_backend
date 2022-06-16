@@ -47,11 +47,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     struct User{
         address upline;
         address[]downline;
-        uint wallet;
+        /*uint wallet;
         uint lastClaimed;
         uint dateJoined;
         uint months;
-        uint deposit;
+        uint deposit;*/
         uint[]packages;
     }
     struct Packages{
@@ -61,6 +61,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint months;
         uint totalDeposit;
         address owner;
+        address _tokenApprovals;
     }
     uint public Split;
     uint private _count;
@@ -125,12 +126,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         ".json"));
     }
     function transferFrom(address a,address b,uint c)public override{unchecked{
-        /*
-        Normal ERC721 token applies
-        User can only transfer to not an existing user
-        */
         require(a==packages[c].owner||getApproved(c)==a||isApprovedForAll(packages[c].owner,a));
-        require(user[b].dateJoined<1);
         /*
         Entire user will be duplicated to the new user where
         The old user will be deleted
@@ -179,7 +175,6 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (address d1,address d2,address d3)=getUplines(msg.sender); 
         //_payment(_USDT,msg.sender,msg.sender,address(this),amount,0);
         //_payment4(_USDT,address(this),msg.sender,[d1,d2,d3,_TECH],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
-        _payment4(_93N,address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
     }}
     function _payment(address con,address from,address usr,address to,uint amt,uint status)private{
         /*
@@ -232,6 +227,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 else wallet*=wallet*2/5/Split;
                 user[d0].wallet-=wallet;
                 _payment(_93N,address(this),address(this),d0,wallet,3);
+                //Pay the uplines commission too
+                //_payment4(_93N,address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
             }
         }
     }}
