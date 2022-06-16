@@ -1,7 +1,7 @@
 /***
 [DEPLOYMENT] CHANGE TOKEN ADDRESSES
 
-Delete nft after cashing out -owners -cidtypes -packages
+Delete nft after cashing out -owners -cidtypes -packages -popPackages
 Need nft to participate
 5/10/15% prorate to 3/6/9 months 
 redeposit to keep alive
