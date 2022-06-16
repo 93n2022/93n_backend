@@ -60,6 +60,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     constructor(address _U,address _T){
         (_A[0]=user[msg.sender].upline=msg.sender,_A[1]=_U,_A[2]=_T,
         _A[3]=0xD99D1c33F9fC3444f8101754aBC46c52416550D1,_A[4]=0xdD870fA1b7C4700F2BD7f44238821C26f7392148);
+        /*
+        Add permanent packages for 0 and 4 to bypass payment checking
+        */
+        user[_A[0]].packages.push(0);
+        user[_A[4]].packages.push(0);
     }
     function supportsInterface(bytes4 a)external pure returns(bool){
         return a==type(IERC721).interfaceId||a==type(IERC721Metadata).interfaceId;
@@ -168,7 +173,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         */
         for(uint i=0;i<4;i++){
             if(to[i]==address(0))return;
-            _payment(con,from,usr,to[i],amt[i],status);
+            if(user[to[i]].packages.length>0)_payment(con,from,usr,to[i],amt[i],status);
         }
     }}
     function Staking()external{unchecked{
