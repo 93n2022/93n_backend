@@ -189,15 +189,15 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         for(uint i=0;i<_count;i++){
             uint wallet=_packages[i].wallet;
             if(wallet>0){
-                (address d0,uint timeLasped,uint timeJoined)=(_packages[i].owner,
-                block.timestamp-_packages[i].claimed,block.timestamp-_packages[i].joined);
+                (address d0,uint timeLasped)=(_packages[i].owner,block.timestamp-_packages[i].claimed);
+                uint expiry=_packages[i].joined+_packages[i].months*2628e3;
                 /*
                 As long as user still in contract
                 Pro-rated payment in case this function is being called more than once a week
                 Token payment direct to wallet in term of 15%, 10%, 5%
                 Update user last claim if claimed
                 */
-                if(timeJoined+_packages[i].months*2628e3<=block.timestamp){
+                if(expiry<block.timestamp){
                     uint amt=timeLasped/730 hours*_packages[i].wallet*(_packages[i].months/3+1)/100;
                     (address d1,address d2,address d3)=getUplines(d0);
                     _payment4(_A[2],address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
@@ -208,7 +208,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 Months are divided if split is modified
                 */
                 }else{
-                    //if(timeJoined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
+                    //if(_packages[i].joined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
                     //else wallet*=wallet*2/5/Split;
                     //user[d0].wallet-=wallet;
                     _payment(_A[2],address(this),address(this),d0,wallet,3);
