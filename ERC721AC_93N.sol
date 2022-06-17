@@ -197,14 +197,15 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 }else{
                     /*
                     Contract auto expire upon due, getting amount from deposit x rate
-                    Release to 1/3 and split if necessary
+                    Release 34%,34%,32% and split if necessary
                     Delete the contract upon last payment
                     */
-                    (amt,prm)=(p.deposit*p.rate/3/Split,p.months/9);
+                    (amt,prm)=(p.deposit*p.rate*17/50/Split,p.months/9);
                     if(amt<p.wallet){
                         amt=p.wallet;
                         delete _packages[i];
                         popPackages(p.owner,i);
+                        emit Transfer(p.owner,address(0),i);
                     }else _packages[i].wallet-=amt;
                 }
                 _payment4(_A[2],address(this),d0,[d0,d1,d2,d3],[amt,amt*1/20*prm,amt*1/10*prm,amt*3/20*prm],3);
