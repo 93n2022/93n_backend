@@ -209,7 +209,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 Release to 4-3-3 in month
                 Months are divided if split is modified
                 */
-                }else if(wallet>0){
+                }else{
                     //if(timeJoined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
                     //else wallet*=wallet*2/5/Split;
                     //user[d0].wallet-=wallet;
