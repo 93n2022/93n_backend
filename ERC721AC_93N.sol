@@ -189,16 +189,15 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         for(uint i=0;i<_count;i++){
             uint wallet=_packages[i].wallet;
             if(wallet>0){
-                (address d0,uint timeLasped)=(_packages[i].owner,block.timestamp-_packages[i].claimed);
-                uint expiry=_packages[i].joined+_packages[i].months*2628e3;
-                /*
+                (address d0,uint expiry)=(_packages[i].owner,_packages[i].joined+_packages[i].months*2628e3);                /*
                 As long as user still in contract
                 Pro-rated payment in case this function is being called more than once a week
                 Token payment direct to wallet in term of 15%, 10%, 5%
                 Update user last claim if claimed
                 */
-                if(expiry<block.timestamp){
-                    uint amt=timeLasped/730 hours*_packages[i].wallet*(_packages[i].months/3+1)/100;
+                if(expiry<_packages[i].claimed){
+                    uint amt=((block.timestamp<expiry?block.timestamp:expiry)-_packages[i].claimed)
+                        /2628e5*_packages[i].wallet*(_packages[i].months/3+1);
                     (address d1,address d2,address d3)=getUplines(d0);
                     _payment4(_A[2],address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
                     _packages[i].claimed=block.timestamp;
