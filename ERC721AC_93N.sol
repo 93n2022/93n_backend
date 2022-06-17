@@ -181,21 +181,18 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         /*
         Go through every contract and pay them and their upline accordingly
         2628e3 seconds a month
-        Get last claim and time joined to accurately payout
         */
         for(uint i=0;i<_count;i++){
             Packages memory p=_packages[i];
             if(p.wallet>0){
-                (address d0,uint expiry)=(p.owner,p.joined+p.months*2628e3);
+                (address d0,uint expiry,uint amt,uint prm)=(p.owner,p.joined+p.months*2628e3,0,1);
                 (address d1,address d2,address d3)=getUplines(d0);
                 /*
-                Still in contract, prorated by the seconds
                 Token payment direct to wallet in term of 15%, 10%, 5%
-                Update user last claim if claimed
+                Update user's last claim if claimed
                 */
                 if(expiry<p.claimed){
-                    uint amt=((block.timestamp<expiry?block.timestamp:expiry)-p.claimed)/2628e5*p.wallet*(p.months/3+1);
-                    _payment4(_A[2],address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
+                    amt=((block.timestamp<expiry?block.timestamp:expiry)-p.claimed)/2628e5*p.wallet*(p.months/3+1);
                     _packages[i].claimed=block.timestamp;
                 }else{
                     /*
@@ -203,14 +200,14 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                     Release to 1/3 and split if necessary
                     Delete the contract upon last payment
                     */
-                    (uint amt,uint prm)=(p.deposit*p.rate/3/Split,p.months/9);
+                    (amt,prm)=(p.deposit*p.rate/3/Split,p.months/9);
                     if(amt<p.wallet){
                         amt=p.wallet;
                         delete _packages[i];
                         popPackages(p.owner,i);
                     }else _packages[i].wallet-=amt;
-                    _payment4(_A[2],address(this),msg.sender,[d0,d1,d2,d3],[amt,amt*1/20*prm,amt*1/10*prm,amt*3/20*prm],3);
                 }
+                _payment4(_A[2],address(this),d0,[d0,d1,d2,d3],[amt,amt*1/20*prm,amt*1/10*prm,amt*3/20*prm],3);
             }
         }
     }}
