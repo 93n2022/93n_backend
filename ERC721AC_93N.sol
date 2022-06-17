@@ -1,9 +1,5 @@
 /***
 [DEPLOYMENT] CHANGE TOKEN ADDRESSES
-
-Delete nft after cashing out -owners -cidtypes -packages -popPackages
-5/10/15% prorate to 3/6/9 months
-
 web3 - open up 1st level first, then info only open up accordingly
 ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
@@ -30,10 +26,9 @@ interface IERC20{function transferFrom(address,address,uint)external;function te
 interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
 contract ERC721AC_93N is IERC721,IERC721Metadata{
     /*
-    The status to be emitted 0-in USDT, 1-in 93N, 2-stake, 3-out
+    Emit status: 0-in USDT, 1-in 93N, 2-stake, 3-out
+    mapping _A: 0-owner, 1-usdt, 2-93n, 3-pcsv3, 4-tech
     Require all the addresses to get live price from PanCakeSwap
-    And to transfer using interface directly
-    _A: 0-owner, 1-usdt, 2-93n, 3-pcsv3, 4-tech
     */
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status);
     struct User{
@@ -43,16 +38,17 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     struct Packages{
         uint wallet;
+        uint deposit;
+        uint rate;
         uint claimed;
         uint joined;
         uint months;
-        uint deposit;
         address owner;
     }
     uint public Split;
     uint private _count;
+    mapping(uint=>Packages)public _packages;
     mapping(uint=>address)private _A;
-    mapping(uint=>Packages)private _packages;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>User)private user;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
@@ -132,30 +128,31 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Connect to PanCakeSwap to get the live price
         Issue the number of tokens in equivalent to USDT
         Initiate new user
-        */
-        /*address[]memory pair=new address[](2); 
+        
+        address[]memory pair=new address[](2); 
         (pair[0],pair[1])=(_TOKEN,_A[1]);
         uint[]memory currentPrice=IPCSV2(_A[3]).getAmountsOut(amount,pair);
         (uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);*/
         _count++;
         (uint tokens,Packages storage p)=(amount,_packages[_count]);
-        (p.months=months,p.wallet=tokens,p.joined=p.claimed=block.timestamp,p.deposit=amount,p.owner=msg.sender);
+        (p.months=months,p.wallet=tokens,p.deposit=amount,p.owner=msg.sender,p.joined=p.claimed=block.timestamp);
+        //TO BE CHANGED - e.g. num_of_tokens / amount
+        p.rate=1;
         user[msg.sender].packages.push(_count);
+        emit Transfer(address(0),msg.sender,_count);
         /*
         Only set upline and downline when user is new
-        Add user into enumUser for counting purposes
         */
         if(user[msg.sender].upline==address(0)){
             user[msg.sender].upline=referral==address(0)?_A[0]:referral;
             user[referral].downline.push(msg.sender);
         }
-        emit Transfer(address(0),msg.sender,_count);
         /*
         Uplines & tech to get USDT 5%, 3%, 2% & tech 1%
         USDT to be prorated according to months
         Getting uplines for payout
-        */
-        /* TEMP DISABLED FOR TESTING
+        
+        TEMP DISABLED FOR TESTING
         (address d1,address d2,address d3)=getUplines(msg.sender); 
         _payment(_A[1],msg.sender,msg.sender,address(this),amount,0);
         amount*=(months/9);
@@ -187,32 +184,32 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Get last claim and time joined to accurately payout
         */
         for(uint i=0;i<_count;i++){
-            uint wallet=_packages[i].wallet;
-            if(wallet>0){
-                (address d0,uint expiry)=(_packages[i].owner,_packages[i].joined+_packages[i].months*2628e3);                /*
-                As long as user still in contract
-                Pro-rated payment in case this function is being called more than once a week
+            Packages memory p=_packages[i];
+            if(p.wallet>0){
+                (address d0,uint expiry)=(p.owner,p.joined+p.months*2628e3);
+                (address d1,address d2,address d3)=getUplines(d0);
+                /*
+                Still in contract, prorated by the seconds
                 Token payment direct to wallet in term of 15%, 10%, 5%
                 Update user last claim if claimed
                 */
-                if(expiry<_packages[i].claimed){
-                    uint amt=((block.timestamp<expiry?block.timestamp:expiry)-_packages[i].claimed)
-                        /2628e5*_packages[i].wallet*(_packages[i].months/3+1);
-                    (address d1,address d2,address d3)=getUplines(d0);
+                if(expiry<p.claimed){
+                    uint amt=((block.timestamp<expiry?block.timestamp:expiry)-p.claimed)/2628e5*p.wallet*(p.months/3+1);
                     _payment4(_A[2],address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
                     _packages[i].claimed=block.timestamp;
-                /*
-                Contract auto expire upon due
-                Release to 4-3-3 in month
-                Months are divided if split is modified
-                */
                 }else{
-                    //if(_packages[i].joined>=(user[d0].months+3*Split)*730 hours)wallet=wallet/Split;
-                    //else wallet*=wallet*2/5/Split;
-                    //user[d0].wallet-=wallet;
-                    _payment(_A[2],address(this),address(this),d0,wallet,3);
-                    //Pay the uplines commission too
-                    //_payment4(_A[2],address(this),msg.sender,[d1,d2,d3,address(0)],[tokens*1/20,tokens*1/10,tokens*3/20,0],1);
+                    /*
+                    Contract auto expire upon due, getting amount from deposit x rate
+                    Release to 1/3 and split if necessary
+                    Delete the contract upon last payment
+                    */
+                    (uint amt,uint prm)=(p.deposit*p.rate/3/Split,p.months/9);
+                    if(amt<p.wallet){
+                        amt=p.wallet;
+                        delete _packages[i];
+                        popPackages(p.owner,i);
+                    }else _packages[i].wallet-=amt;
+                    _payment4(_A[2],address(this),msg.sender,[d0,d1,d2,d3],[amt,amt*1/20*prm,amt*1/10*prm,amt*3/20*prm],3);
                 }
             }
         }
@@ -257,9 +254,12 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             }
         }
     }}
+    function getUserPackages(address a)external view returns(uint[]memory){
+        return user[a].packages;
+    }
     function popPackages(address a,uint b)private{unchecked{
-        for(uint i=0;i<user[a].packages.length;i++)if(user[a].packages[i]==b){
-            user[a].packages[i]=user[a].packages[user[a].packages.length-1];
+        for(uint h=0;h<user[a].packages.length;h++)if(user[a].packages[h]==b){
+            user[a].packages[h]=user[a].packages[user[a].packages.length-1];
             user[a].packages.pop();
         }
     }}
