@@ -183,7 +183,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     function Staking()external{unchecked{
         /*
         Go through every contract and pay them and their upline accordingly
-        31,536,000 seconds a year=exactly 730 hours per month
+        2628e3 seconds a month
         Get last claim and time joined to accurately payout
         */
         for(uint i=0;i<_count;i++){
@@ -197,13 +197,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 Token payment direct to wallet in term of 15%, 10%, 5%
                 Update user last claim if claimed
                 */
-                if(timeJoined+_packages[i].months*730 hours<=block.timestamp){
-                    if(timeLasped>=1 hours){
-                        uint amt=timeLasped/730 hours*_packages[i].wallet*(_packages[i].months/3+1)/100;
-                        (address d1,address d2,address d3)=getUplines(d0);
-                        _payment4(_A[2],address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
-                        _packages[i].claimed=block.timestamp;
-                    }
+                if(timeJoined+_packages[i].months*2628e3<=block.timestamp){
+                    uint amt=timeLasped/730 hours*_packages[i].wallet*(_packages[i].months/3+1)/100;
+                    (address d1,address d2,address d3)=getUplines(d0);
+                    _payment4(_A[2],address(this),d0,[d1,d2,d3,d0],[amt*1/20,amt*1/10,amt*3/20,amt],2);
+                    _packages[i].claimed=block.timestamp;
                 /*
                 Contract auto expire upon due
                 Release to 4-3-3 in month
@@ -266,7 +264,4 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             user[a].packages.pop();
         }
     }}
-    function getTimeNOw()external view returns(uint){
-        return block.timestamp;
-    }
 }
