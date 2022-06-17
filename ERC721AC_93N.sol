@@ -266,4 +266,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             user[a].packages.pop();
         }
     }}
+    function getTimeNOw()external view returns(uint){
+        return block.timestamp;
+    }
 }
