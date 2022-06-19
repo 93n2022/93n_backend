@@ -224,6 +224,13 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             }
         }
     }}
+    function Cleanup()external{unchecked{
+        uint len=_counts.length;
+        for(uint i=0;i<_counts.length;i++)if(Pack[_counts[i]].wallet==0){
+            (_counts[i]=_counts[len-1],len--,i--);
+            _counts.pop();
+        }
+    }}
     function SetSplit(uint num)external{
         /*
         Modifying the split to slow down the withdrawal
@@ -258,6 +265,5 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }}
     function getUserPackages(address a)external view returns(uint[]memory){
         return user[a].packages;
-    }
-    
+    }   
 }
