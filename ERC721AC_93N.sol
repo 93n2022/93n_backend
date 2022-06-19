@@ -47,6 +47,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     uint public Split;
     uint private _count;
+    uint[]public _counts;
     mapping(uint=>Packages)public Pack;
     mapping(uint=>address)private _A;
     mapping(uint=>address)private _tokenApprovals;
@@ -162,6 +163,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         _count++;
         (uint tokens,Packages storage p)=(amount,Pack[_count]);
         (p.months=months,p.wallet=tokens,p.deposit=amount,p.owner=msg.sender,p.joined=p.claimed=block.timestamp);
+        _counts.push(_count);
         //TO BE CHANGED - e.g. num_of_tokens / amount
         p.rate=1;
         user[msg.sender].packages.push(_count);
@@ -190,7 +192,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Go through every contract and pay them and their upline accordingly
         2628e3 seconds a month
         */
-        for(uint i=0;i<_count;i++){
+        for(uint j=0;j<_counts.length;j++){
+            uint i=_counts[j];
             Packages memory p=Pack[i];
             if(p.wallet>0){
                 (address d0,uint expiry,uint amt,uint prm)=(p.owner,p.joined+p.months*2628e3,0,1);
