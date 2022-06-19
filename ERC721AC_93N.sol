@@ -47,7 +47,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     uint public Split;
     uint private _count;
-    mapping(uint=>Packages)public _packages;
+    mapping(uint=>Packages)public Pack;
     mapping(uint=>address)private _A;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>User)private user;
@@ -65,7 +65,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         return a==type(IERC721).interfaceId||a==type(IERC721Metadata).interfaceId;
     }
     function ownerOf(uint a)public view override returns(address){
-        return _packages[a].owner;
+        return Pack[a].owner;
     }
     function owner()external view returns(address){
         return _A[0];
@@ -102,8 +102,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     function tokenURI(uint a)external view override returns(string memory){
         return string(abi.encodePacked("ipfs://",
-        _packages[a].deposit>1e23?"bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black":
-        _packages[a].deposit>1e22?"bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold":
+        Pack[a].deposit>1e23?"bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black":
+        Pack[a].deposit>1e22?"bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold":
         "bafybeigjnlikmsm3mjvhx6ijk26bedd5lrvi3yfjlwgytzzj3h5ao6i57i/red",
         ".json"));
     }
@@ -112,13 +112,39 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Entire user will be duplicated to the new user
         The old user will be deleted
         */
-        require(a==_packages[c].owner||getApproved(c)==a||isApprovedForAll(_packages[c].owner,a));
-        (_tokenApprovals[c],_packages[c].owner)=(address(0),b);
+        require(a==Pack[c].owner||getApproved(c)==a||isApprovedForAll(Pack[c].owner,a));
+        (_tokenApprovals[c],Pack[c].owner)=(address(0),b);
         user[b].packages.push(c);
         popPackages(a,c);
-        emit Approval(_packages[c].owner,b,c);
+        emit Approval(Pack[c].owner,b,c);
         emit Transfer(a,b,c);
     }}
+
+    function popPackages(address a,uint b)private{unchecked{
+        for(uint h=0;h<user[a].packages.length;h++)if(user[a].packages[h]==b){
+            user[a].packages[h]=user[a].packages[user[a].packages.length-1];
+            user[a].packages.pop();
+        }
+    }}
+    function _payment(address con,address from,address usr,address to,uint amt,uint status)private{
+        /*
+        Custom connection to the various token address
+        Emit events for history
+        */
+        IERC20(con).transferFrom(from,to,amt);
+        emit Payout(usr,to,amt,status);
+    }
+    function _payment4(address con,address from,address usr,address[4]memory to,uint[4]memory amt,uint status)private{unchecked{
+        /*
+        Payout loop of 4 iterations
+        Exit fuction (for payment of USDT) if no address found
+        */
+        for(uint i=0;i<4;i++){
+            if(to[i]==address(0))return;
+            if(user[to[i]].packages.length>0)_payment(con,from,usr,to[i],amt[i],status);
+        }
+    }}
+
     function Deposit(address referral,uint amount,uint months)external{unchecked{
         require(referral!=msg.sender);
         require(user[referral].upline!=address(0));
@@ -134,7 +160,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint[]memory currentPrice=IPCSV2(_A[3]).getAmountsOut(amount,pair);
         (uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);*/
         _count++;
-        (uint tokens,Packages storage p)=(amount,_packages[_count]);
+        (uint tokens,Packages storage p)=(amount,Pack[_count]);
         (p.months=months,p.wallet=tokens,p.deposit=amount,p.owner=msg.sender,p.joined=p.claimed=block.timestamp);
         //TO BE CHANGED - e.g. num_of_tokens / amount
         p.rate=1;
@@ -159,31 +185,13 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         _payment4(_A[1],address(this),msg.sender,[d1,d2,d3,_A[4]],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
         /**/
     }}
-    function _payment(address con,address from,address usr,address to,uint amt,uint status)private{
-        /*
-        Custom connection to the various token address
-        Emit events for history
-        */
-        IERC20(con).transferFrom(from,to,amt);
-        emit Payout(usr,to,amt,status);
-    }
-    function _payment4(address con,address from,address usr,address[4]memory to,uint[4]memory amt,uint status)private{unchecked{
-        /*
-        Payout loop of 4 iterations
-        Exit fuction (for payment of USDT) if no address found
-        */
-        for(uint i=0;i<4;i++){
-            if(to[i]==address(0))return;
-            if(user[to[i]].packages.length>0)_payment(con,from,usr,to[i],amt[i],status);
-        }
-    }}
     function Staking()external{unchecked{
         /*
         Go through every contract and pay them and their upline accordingly
         2628e3 seconds a month
         */
         for(uint i=0;i<_count;i++){
-            Packages memory p=_packages[i];
+            Packages memory p=Pack[i];
             if(p.wallet>0){
                 (address d0,uint expiry,uint amt,uint prm)=(p.owner,p.joined+p.months*2628e3,0,1);
                 (address d1,address d2,address d3)=getUplines(d0);
@@ -193,7 +201,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 */
                 if(expiry<p.claimed){
                     amt=((block.timestamp<expiry?block.timestamp:expiry)-p.claimed)/2628e5*p.wallet*(p.months/3+1);
-                    _packages[i].claimed=block.timestamp;
+                    Pack[i].claimed=block.timestamp;
                 }else{
                     /*
                     Contract auto expire upon due, getting amount from deposit x rate
@@ -203,10 +211,10 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                     (amt,prm)=(p.deposit*p.rate*17/50/Split,p.months/9);
                     if(amt<p.wallet){
                         amt=p.wallet;
-                        delete _packages[i];
+                        delete Pack[i];
                         popPackages(p.owner,i);
                         emit Transfer(p.owner,address(0),i);
-                    }else _packages[i].wallet-=amt;
+                    }else Pack[i].wallet-=amt;
                 }
                 _payment4(_A[2],address(this),d0,[d0,d1,d2,d3],[amt,amt*1/20*prm,amt*1/10*prm,amt*3/20*prm],3);
             }
@@ -255,10 +263,5 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     function getUserPackages(address a)external view returns(uint[]memory){
         return user[a].packages;
     }
-    function popPackages(address a,uint b)private{unchecked{
-        for(uint h=0;h<user[a].packages.length;h++)if(user[a].packages[h]==b){
-            user[a].packages[h]=user[a].packages[user[a].packages.length-1];
-            user[a].packages.pop();
-        }
-    }}
+    
 }
