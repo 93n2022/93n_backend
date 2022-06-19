@@ -201,10 +201,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 Token payment direct to wallet in term of 15%, 10%, 5%
                 Update user's last claim if claimed
                 */
-                if(expiry<p.claimed){
-                    amt=((block.timestamp<expiry?block.timestamp:expiry)-p.claimed)/2628e5*p.wallet*(p.months/3+1);
-                    Pack[i].claimed=block.timestamp;
-                }else{
+                if(expiry<p.claimed)(amt=((block.timestamp<expiry?block.timestamp:expiry)-p.claimed)/
+                    2628e5*p.wallet*(p.months/3+1),Pack[i].claimed=block.timestamp);
+                else{
                     /*
                     Contract auto expire upon due, getting amount from deposit x rate
                     Release 34%,34%,32% and split if necessary
@@ -228,33 +227,31 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         */
         require(msg.sender==_A[0]);
         Split=num;
-    }
-    
-    function getDownlines(address a)external view returns(address[]memory b,address[]memory c,address[]memory d){unchecked{
-        uint d2Length;
-        uint d3Length;
-        b=user[a].downline;
+    } 
+    function getDownlines(address a)external view returns(address[]memory lv1,uint lv2,uint lv3){unchecked{
+        lv1=user[a].downline;
         /*
         Loop through all level 2 and level 3 downlines
         Create new array counts
         Set length and reset variables for later use
         */
-        for(uint i=0;i<b.length;i++){
-            address[]memory c1=user[b[i]].downline;
-            d2Length+=c1.length;
-            for(uint j=0;j<c1.length;j++)d3Length+=user[c1[j]].downline.length;
+        for(uint i=0;i<lv1.length;i++){
+            address[]memory c1=user[lv1[i]].downline;
+            lv2+=c1.length;
+            for(uint j=0;j<c1.length;j++)lv3+=user[c1[j]].downline.length;
         }
-        (c=new address[](d2Length),d=new address[](d3Length),d2Length=d3Length=0);
         /*
+        (c=new address[](d2Length),d=new address[](d3Length),d2Length=d3Length=0);
         Fill the count with actual address
+        Disabled this and return the length instead for now
         */
-        for(uint i=0;i<b.length;i++){
+        /*for(uint i=0;i<b.length;i++){
             address[]memory c1=user[b[i]].downline;
             for(uint j=0;j<c1.length;j++){
                 (c[d2Length]=c1[j],d2Length++);
                 for(uint k=0;k<user[c1[j]].downline.length;k++)(d[d3Length]=user[c1[j]].downline[k],d3Length++);
             }
-        }
+        }*/
     }}
     function getUserPackages(address a)external view returns(uint[]memory){
         return user[a].packages;
