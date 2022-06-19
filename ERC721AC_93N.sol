@@ -194,7 +194,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             Packages memory p=Pack[i];
             if(p.wallet>0){
                 (address d0,uint expiry,uint amt,uint prm)=(p.owner,p.joined+p.months*2628e3,0,1);
-                (address d1,address d2,address d3)=getUplines(d0);
+                address d1=user[d0].upline;
+                address d2=user[d1].upline;
+                address d3=user[d2].upline;
                 /*
                 Token payment direct to wallet in term of 15%, 10%, 5%
                 Update user's last claim if claimed
@@ -227,13 +229,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         require(msg.sender==_A[0]);
         Split=num;
     }
-    function getUplines(address a)private view returns(address d1,address d2,address d3){
-        /*
-        Get direct first
-        Use previous direct to get next direct and so on
-        */
-        (d1=user[a].upline,d2=user[d1].upline,d3=user[d2].upline);
-    }
+    
     function getDownlines(address a)external view returns(address[]memory b,address[]memory c,address[]memory d){unchecked{
         uint d2Length;
         uint d3Length;
