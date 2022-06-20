@@ -45,7 +45,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint months;
         address owner;
     }
-    uint public Split;
+    uint public Split=1;
     uint private _count;
     uint[]public _counts;
     mapping(uint=>Packages)public Pack;
@@ -208,7 +208,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 else{
                     /*
                     Contract auto expire upon due, getting amount from deposit x rate
-                    Release 34%,34%,32% and split if necessary
+                    Release 34%,34%,32% and split if set
                     Delete the contract upon last payment
                     */
                     (amt,prm,s)=(p.deposit*p.rate*17/50/Split,p.months/9,2);
