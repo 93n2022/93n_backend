@@ -26,7 +26,7 @@ interface IERC20{function transferFrom(address,address,uint)external;function te
 interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
 contract ERC721AC_93N is IERC721,IERC721Metadata{
     /*
-    Emit status: 0-in USDT, 1-in 93N, 2-stake, 3-out
+    Emit status: 0-in USDT, 1-stake, 2-out
     mapping _A: 0-owner, 1-usdt, 2-93n, 3-pcsv3, 4-tech
     Require all the addresses to get live price from PanCakeSwap
     */
@@ -194,7 +194,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         2628e3 seconds a month
         */
         for(uint j=0;j<_counts.length;j++){
-            uint i=_counts[j];
+            (uint i,uint s)=(_counts[j],1);
             Packages memory p=Pack[i];
             if(p.wallet>0){
                 (address d0,uint expiry,uint amt,uint prm)=(p.owner,p.joined+p.months*2628e3,0,1);
@@ -211,7 +211,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                     Release 34%,34%,32% and split if necessary
                     Delete the contract upon last payment
                     */
-                    (amt,prm)=(p.deposit*p.rate*17/50/Split,p.months/9);
+                    (amt,prm,s)=(p.deposit*p.rate*17/50/Split,p.months/9,2);
                     if(amt<p.wallet){
                         amt=p.wallet;
                         delete Pack[i];
@@ -219,7 +219,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                         emit Transfer(p.owner,address(0),i);
                     }else Pack[i].wallet-=amt;
                 }
-                _payment4(_A[2],address(this),d0,[d0,d1,d2,d3],[amt,amt*1/20*prm,amt*1/10*prm,amt*3/20*prm],3);
+                _payment4(_A[2],address(this),d0,[d0,d1,d2,d3],[amt,amt*1/20*prm,amt*1/10*prm,amt*3/20*prm],s);
             }
         }
     }}
