@@ -202,8 +202,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 Token payment direct to wallet in term of 15%, 10%, 5%
                 Update user's last claim if claimed
                 */
-                if(expiry>p.claimed)(amt=((expiry>block.timestamp?block.timestamp:expiry)-p.claimed)/
-                    18000*p.wallet*(p.months/3+1),Pack[i].claimed=block.timestamp); //2628e5
+                if(expiry>p.claimed)(amt=((expiry>block.timestamp?block.timestamp:expiry)-p.claimed)*
+                    p.wallet*(p.months/3+1)/18000,Pack[i].claimed=block.timestamp); //2628e5
                 else{
                     /*
                     Contract auto expire upon due, getting amount from deposit x rate
@@ -263,6 +263,6 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }}
     function getUserPackages(address a)external view returns(uint[]memory){
         return user[a].packages;
-    }   
+    }
 }
 // 100000000000000000000
