@@ -203,7 +203,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 Update user's last claim if claimed
                 */
                 if(expiry>p.claimed)(amt=((expiry>block.timestamp?block.timestamp:expiry)-p.claimed)*
-                    p.wallet*(p.months/3+1)/18000,Pack[i].claimed=block.timestamp); //2628e5
+                    p.wallet*(p.months/3+1)/2628e5,Pack[i].claimed=block.timestamp);
                 else{
                     /*
                     Contract auto expire upon due, getting amount from deposit x rate
