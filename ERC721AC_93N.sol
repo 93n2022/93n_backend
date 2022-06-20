@@ -103,8 +103,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     function tokenURI(uint a)external view override returns(string memory){
         return string(abi.encodePacked("ipfs://",
-        Pack[a].deposit>1e23?"bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black":
-        Pack[a].deposit>1e22?"bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold":
+        Pack[a].deposit>1e22?"bafybeibtgqc26sv74erbgm6grtivjvfglffol4an4nvhorbv3ljgamg4uu/black":
+        Pack[a].deposit>1e21?"bafybeiaubm73azo4beh7am63wkua3zj4ijgy6n4gjc7spe3okwuxrt66t4/gold":
         "bafybeigjnlikmsm3mjvhx6ijk26bedd5lrvi3yfjlwgytzzj3h5ao6i57i/red",
         ".json"));
     }
@@ -153,7 +153,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         require(referral!=msg.sender);
         require(user[referral].upline!=address(0));
         require(months==3||months==6||months==9);
-        require(amount>=1e21);
+        require(amount>=1e20);
         /*
         Connect to PanCakeSwap to get the live price
         Issue the number of tokens in equivalent to USDT
@@ -266,3 +266,4 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         return user[a].packages;
     }   
 }
+// 100000000000000000000
