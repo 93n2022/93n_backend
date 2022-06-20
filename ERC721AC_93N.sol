@@ -46,7 +46,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         address owner;
     }
     uint public Split=1;
-    uint public _count; //PRIVATE IT AFTER
+    uint private _count;
     uint[]public _counts;
     mapping(uint=>Packages)public Pack;
     mapping(uint=>address)private _A;
@@ -151,7 +151,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
 
     function Deposit(address referral,uint amount,uint months)external{unchecked{
         require(referral!=msg.sender);
-        require(user[referral].upline!=address(0));
+        require(referral==address(0)||user[referral].upline!=address(0));
         require(months==3||months==6||months==9);
         require(amount>=1e20);
         /*
@@ -174,7 +174,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Only set upline and downline when user is new
         */
         if(user[msg.sender].upline==address(0)){
-            user[msg.sender].upline=referral==address(0)?_A[0]:referral;
+            referral=referral==address(0)?_A[0]:referral;
+            user[msg.sender].upline=referral;
             user[referral].downline.push(msg.sender);
         }
         /*
@@ -266,3 +267,4 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
 }
 // 100000000000000000000
+// 0x0000000000000000000000000000000000000000
