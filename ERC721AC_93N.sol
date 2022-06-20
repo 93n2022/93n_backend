@@ -46,7 +46,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         address owner;
     }
     uint public Split=1;
-    uint private _count;
+    uint public _count; //PRIVATE IT AFTER
     uint[]public _counts;
     mapping(uint=>Packages)public Pack;
     mapping(uint=>address)private _A;
@@ -167,8 +167,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (uint tokens,Packages storage p)=(amount,Pack[_count]);
         (p.months=months,p.wallet=tokens,p.deposit=amount,p.owner=msg.sender,p.joined=p.claimed=block.timestamp);
         _counts.push(_count);
-        //TO BE CHANGED - e.g. num_of_tokens / amount
-        p.rate=1;
+        p.rate=1; //TO BE CHANGED - e.g. num_of_tokens / amount
         user[msg.sender].packages.push(_count);
         emit Transfer(address(0),msg.sender,_count);
         /*
@@ -203,8 +202,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 Token payment direct to wallet in term of 15%, 10%, 5%
                 Update user's last claim if claimed
                 */
-                if(expiry<p.claimed)(amt=((block.timestamp<expiry?block.timestamp:expiry)-p.claimed)/
-                    2628e5*p.wallet*(p.months/3+1),Pack[i].claimed=block.timestamp);
+                if(expiry>p.claimed)(amt=((expiry>block.timestamp?block.timestamp:expiry)-p.claimed)/
+                    18000*p.wallet*(p.months/3+1),Pack[i].claimed=block.timestamp); //2628e5
                 else{
                     /*
                     Contract auto expire upon due, getting amount from deposit x rate
@@ -212,7 +211,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                     Delete the contract upon last payment
                     */
                     (amt,prm,s)=(p.deposit*p.rate*17/50/Split,p.months/9,2);
-                    if(amt<p.wallet){
+                    if(amt>=p.wallet){
                         amt=p.wallet;
                         delete Pack[i];
                         popPackages(p.owner,i);
