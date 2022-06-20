@@ -185,7 +185,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         */
         (address d1,address d2,address d3)=getUplines(msg.sender); 
         _payment(_A[1],msg.sender,msg.sender,address(this),amount,0);
-        amount*=(months/9);
+        amount=amount*months/9;
         _payment4(_A[1],address(this),msg.sender,[d1,d2,d3,_A[4]],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
     }}
     function Staking()external{unchecked{
