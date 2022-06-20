@@ -121,6 +121,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         emit Transfer(a,b,c);
     }}
 
+    function getUplines(address d0)private view returns(address d1,address d2,address d3){
+        (d1=user[d0].upline,d2=user[d1].upline,d3=user[d2].upline);
+    }
     function popPackages(address a,uint b)private{unchecked{
         for(uint h=0;h<user[a].packages.length;h++)if(user[a].packages[h]==b){
             user[a].packages[h]=user[a].packages[user[a].packages.length-1];
@@ -179,13 +182,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Uplines & tech to get USDT 5%, 3%, 2% & tech 1%
         USDT to be prorated according to months
         Getting uplines for payout
-        
-        TEMP DISABLED FOR TESTING
+        */
         (address d1,address d2,address d3)=getUplines(msg.sender); 
         _payment(_A[1],msg.sender,msg.sender,address(this),amount,0);
         amount*=(months/9);
         _payment4(_A[1],address(this),msg.sender,[d1,d2,d3,_A[4]],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
-        /**/
     }}
     function Staking()external{unchecked{
         /*
@@ -197,9 +198,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             Packages memory p=Pack[i];
             if(p.wallet>0){
                 (address d0,uint expiry,uint amt,uint prm)=(p.owner,p.joined+p.months*2628e3,0,1);
-                address d1=user[d0].upline;
-                address d2=user[d1].upline;
-                address d3=user[d2].upline;
+                (address d1,address d2,address d3)=getUplines(msg.sender); 
                 /*
                 Token payment direct to wallet in term of 15%, 10%, 5%
                 Update user's last claim if claimed
