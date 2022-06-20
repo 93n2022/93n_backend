@@ -216,7 +216,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                         amt=p.wallet;
                         delete Pack[i];
                         popPackages(p.owner,i);
-                        emit Transfer(p.owner,address(0),i);
+                        emit Transfer(p.owner,address(0),i); 
                     }else Pack[i].wallet-=amt;
                 }
                 _payment4(_A[2],address(this),d0,[d0,d1,d2,d3],[amt,amt*1/20*prm,amt*1/10*prm,amt*3/20*prm],s);
