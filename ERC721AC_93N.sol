@@ -186,7 +186,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (address d1,address d2,address d3)=getUplines(msg.sender); 
         _payment(_A[1],msg.sender,msg.sender,address(this),amount,0);
         amount=amount*months/9;
-        _payment4(_A[1],address(this),msg.sender,[d1,d2,d3,_A[4]],[amount*1/20,amount*3/100,amount*1/50,amount*1/100],0);
+        _payment4(_A[1],address(this),msg.sender,[d1,d2,d3,_A[4]],[amount/20,amount*3/100,amount/50,amount/100],0);
     }}
     function Staking()external{unchecked{
         /*
@@ -219,7 +219,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                         emit Transfer(p.owner,address(0),i); 
                     }else Pack[i].wallet-=amt;
                 }
-                _payment4(_A[2],address(this),d0,[d0,d1,d2,d3],[amt,amt*1/20*prm,amt*1/10*prm,amt*3/20*prm],s);
+                _payment4(_A[2],address(this),d0,[d0,d1,d2,d3],[amt,amt/20*prm,amt/10*prm,amt*3/20*prm],s);
             }
         }
     }}
