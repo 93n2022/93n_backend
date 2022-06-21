@@ -248,22 +248,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             lv2+=c1.length;
             for(uint j=0;j<c1.length;j++)lv3+=user[c1[j]].downline.length;
         }
-        /*
-        (c=new address[](d2Length),d=new address[](d3Length),d2Length=d3Length=0);
-        Fill the count with actual address
-        Disabled this and return the length instead for now
-        */
-        /*for(uint i=0;i<b.length;i++){
-            address[]memory c1=user[b[i]].downline;
-            for(uint j=0;j<c1.length;j++){
-                (c[d2Length]=c1[j],d2Length++);
-                for(uint k=0;k<user[c1[j]].downline.length;k++)(d[d3Length]=user[c1[j]].downline[k],d3Length++);
-            }
-        }*/
     }}
     function getUserPackages(address a)external view returns(uint[]memory){
         return user[a].packages;
     }
 }
-// 100000000000000000000
-// 0x0000000000000000000000000000000000000000
