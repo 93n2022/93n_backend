@@ -150,8 +150,6 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }}
 
     function Deposit(address referral,uint amount,uint months)external{unchecked{
-        require(referral!=msg.sender);
-        require(referral==address(0)||user[referral].upline!=address(0));
         require(months==3||months==6||months==9);
         require(amount>=1e20);
         /*
@@ -172,9 +170,10 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         emit Transfer(address(0),msg.sender,_count);
         /*
         Only set upline and downline when user is new
+        If no address, referral is not existing member or referral is ownself, set referral as admin
         */
         if(user[msg.sender].upline==address(0)){
-            referral=referral==address(0)?_A[0]:referral;
+            referral=referral==address(0)||user[referral].upline==address(0)||referral==msg.sender?_A[0]:referral;
             user[msg.sender].upline=referral;
             user[referral].downline.push(msg.sender);
         }
