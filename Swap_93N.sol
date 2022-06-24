@@ -1,7 +1,7 @@
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC20{function transferFrom(address,address,uint)external;}
 contract Swap_93N{
-    uint public fee;
+    uint public fee=9999;
     address private _owner;
     mapping(address=>mapping(address=>uint[2]))public pairs;
     constructor(){
@@ -36,6 +36,6 @@ contract Swap_93N{
         pairs[conAddr2][conAddr1][0]-=amount2,pairs[conAddr2][conAddr1][1]+=amount1);
     }}
     function getPrice(address conAddr1,address conAddr2,uint amount)public view returns(uint){{
-        return amount/pairs[conAddr1][conAddr2][0]*pairs[conAddr1][conAddr2][1];
+        return pairs[conAddr1][conAddr2][1]*amount/pairs[conAddr1][conAddr2][0]*fee/10000;
     }}
 }

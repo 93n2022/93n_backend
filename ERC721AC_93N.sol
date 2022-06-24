@@ -23,11 +23,11 @@ interface IERC721Metadata{
     function tokenURI(uint)external view returns(string memory);
 }
 interface IERC20{function transferFrom(address,address,uint)external;}
-interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
+interface ISWAP{function getPrice(address,address,uint)external view returns(uint);}
 contract ERC721AC_93N is IERC721,IERC721Metadata{
     /*
     Emit status: 0-in USDT, 1-stake, 2-out
-    mapping _A: 0-owner, 1-usdt, 2-93n, 3-pcsv3, 4-tech
+    mapping _A: 0-owner, 1-usdt, 2-93n, 3-swap, 4-tech
     Require all the addresses to get live price from PanCakeSwap
     */
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status);
@@ -153,16 +153,12 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         require(months==3||months==6||months==9);
         require(amount>=1e20);
         /*
-        Connect to PanCakeSwap to get the live price
+        Get price from our own swap
         Issue the number of tokens in equivalent to USDT
         Initiate new user
-        
-        address[]memory pair=new address[](2); 
-        (pair[0],pair[1])=(_TOKEN,_A[1]);
-        uint[]memory currentPrice=IPCSV2(_A[3]).getAmountsOut(amount,pair);
-        (uint tokens,User storage u)=(amount/currentPrice[0],user[msg.sender]);*/
+        */
         _count++;
-        (uint tokens,Packages storage p)=(amount,Pack[_count]);
+        (uint tokens,Packages storage p)=(ISWAP(_A[3]).getPrice(_A[1],_A[2],amount),Pack[_count]);
         (p.months=months,p.wallet=tokens,p.deposit=amount,p.owner=msg.sender,p.joined=p.claimed=block.timestamp);
         _counts.push(_count);
         p.rate=1; //TO BE CHANGED - e.g. num_of_tokens / amount
