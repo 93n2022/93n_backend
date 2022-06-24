@@ -10,13 +10,13 @@ contract Swap_93N{
     modifier OnlyOwner(){
         require(_owner==msg.sender);_;
     }
-    function addLiqudity(address conAddr1,address conAddr2,uint amount1,uint amount2)external OnlyOwner{unchecked{
+    function addLiqudity(address conAddr1,address conAddr2,uint amount1,uint amount2)external payable OnlyOwner{unchecked{
         IERC20(conAddr1).transferFrom(msg.sender,address(this),amount1);
         IERC20(conAddr2).transferFrom(msg.sender,address(this),amount2);
         (pairs[conAddr1][conAddr2][0]+=amount1,pairs[conAddr1][conAddr2][1]+=amount2,
         pairs[conAddr2][conAddr1][0]+=amount2,pairs[conAddr2][conAddr1][1]+=amount1);
     }}
-    function RemoveLiqudity(address conAddr1,address conAddr2,uint amount1,uint amount2)external OnlyOwner{unchecked{
+    function RemoveLiqudity(address conAddr1,address conAddr2,uint amount1,uint amount2)external payable OnlyOwner{unchecked{
         require(_owner==msg.sender);
         IERC20(conAddr1).transferFrom(address(this),msg.sender,amount1);
         IERC20(conAddr2).transferFrom(address(this),msg.sender,amount2);
@@ -26,7 +26,7 @@ contract Swap_93N{
     function setFee(uint percent)external OnlyOwner{
         fee=percent;
     }
-    function exchange(address conAddr1,address conAddr2,uint amount1)external{unchecked{
+    function exchange(address conAddr1,address conAddr2,uint amount1)external payable{unchecked{
         uint amount2=getPrice(conAddr1,conAddr2,amount1);
         require(amount2>0);
         require(amount2<=pairs[conAddr1][conAddr2][1]);
