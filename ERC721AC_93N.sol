@@ -22,7 +22,7 @@ interface IERC721Metadata{
     function symbol()external view returns(string memory);
     function tokenURI(uint)external view returns(string memory);
 }
-interface IERC20{function transferFrom(address,address,uint)external;function testMint()external;}
+interface IERC20{function transferFrom(address,address,uint)external;}
 interface IPCSV2{function getAmountsOut(uint,address[]memory)external returns(uint[]memory);}
 contract ERC721AC_93N is IERC721,IERC721Metadata{
     /*
