@@ -35,7 +35,6 @@ contract Swap_93N{
         (pairs[conAddr1][conAddr2][0]+=amount1,pairs[conAddr1][conAddr2][1]-=amount2,
         pairs[conAddr2][conAddr1][0]-=amount2,pairs[conAddr2][conAddr1][1]+=amount1);
     }}
-
     function getPrice(address conAddr1,address conAddr2,uint amount)public view returns(uint){{
         return amount/pairs[conAddr1][conAddr2][0]*pairs[conAddr1][conAddr2][1];
     }}
