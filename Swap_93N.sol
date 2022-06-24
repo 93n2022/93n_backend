@@ -13,6 +13,7 @@ contract Swap_93N{
     function addLiqudity(address conAddr1,address conAddr2,uint amount1,uint amount2)external{unchecked{
         require(amount1>0);
         require(amount2>0);
+        require(_owner==msg.sender);
         (pairs[conAddr1][conAddr2][0]+=amount1,pairs[conAddr1][conAddr2][1]+=amount2,
         pairs[conAddr2][conAddr1][0]+=amount2,pairs[conAddr2][conAddr1][1]+=amount1);
     }}
@@ -20,4 +21,7 @@ contract Swap_93N{
         require(_owner==msg.sender);
         fee=percent;
     }
+    function getPrice(address conAddr1,address conAddr2,uint amount)public view returns(uint){{
+        return amount/pairs[conAddr1][conAddr2][0]*pairs[conAddr1][conAddr2][1];
+    }}
 }
