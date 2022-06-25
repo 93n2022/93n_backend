@@ -13,15 +13,13 @@ contract Swap_93N{
     function addLiqudity(address conAddr1,address conAddr2,uint amount1,uint amount2)external payable OnlyOwner{unchecked{
         IERC20(conAddr1).transferFrom(msg.sender,address(this),amount1);
         IERC20(conAddr2).transferFrom(msg.sender,address(this),amount2);
-        (pairs[conAddr1][conAddr2][0]+=amount1,pairs[conAddr1][conAddr2][1]+=amount2,
-        pairs[conAddr2][conAddr1][0]+=amount2,pairs[conAddr2][conAddr1][1]+=amount1);
+        (pairs[conAddr1][conAddr2][0]+=amount1,pairs[conAddr1][conAddr2][1]+=amount2);
     }}
     function RemoveLiqudity(address conAddr1,address conAddr2,uint amount1,uint amount2)external payable OnlyOwner{unchecked{
         require(_owner==msg.sender);
         IERC20(conAddr1).transferFrom(address(this),msg.sender,amount1);
         IERC20(conAddr2).transferFrom(address(this),msg.sender,amount2);
-        (pairs[conAddr1][conAddr2][0]-=amount1,pairs[conAddr1][conAddr2][1]-=amount2,
-        pairs[conAddr2][conAddr1][0]-=amount2,pairs[conAddr2][conAddr1][1]-=amount1);
+        (pairs[conAddr1][conAddr2][0]-=amount1,pairs[conAddr1][conAddr2][1]-=amount2);
     }}
     function setFee(uint percent)external OnlyOwner{
         fee=percent;
@@ -32,8 +30,7 @@ contract Swap_93N{
         require(amount2<=pairs[conAddr1][conAddr2][1]);
         IERC20(conAddr1).transferFrom(msg.sender,address(this),amount1);
         IERC20(conAddr2).transferFrom(address(this),msg.sender,amount2);
-        (pairs[conAddr1][conAddr2][0]+=amount1,pairs[conAddr1][conAddr2][1]-=amount2,
-        pairs[conAddr2][conAddr1][0]-=amount2,pairs[conAddr2][conAddr1][1]+=amount1);
+        (pairs[conAddr1][conAddr2][0]+=amount1,pairs[conAddr1][conAddr2][1]-=amount2);
     }}
     function getPrice(address conAddr1,address conAddr2,uint amount)public view returns(uint){{
         return pairs[conAddr1][conAddr2][1]*amount/pairs[conAddr1][conAddr2][0]*fee/10000;
