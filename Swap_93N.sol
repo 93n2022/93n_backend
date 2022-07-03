@@ -45,6 +45,6 @@ contract Swap_93N{
         (uint d,uint _L1,uint _L2)=(amt%_decimal,pairs[a[0]][a[1]],pairs[a[1]][a[0]]);
         (amt-=d,amt/=_decimal);
         for(uint i=0;i<amt;i++)(_L2+=_L2*_decimal/_L1,_L1-=_decimal);
-        amt2=_L2*fee/1e4+d>0?pairs[a[0]][a[1]]*amt/pairs[a[0]][a[1]]*fee/1e4*d:0;
+        amt2=_L2*fee/1e4+d>0?pairs[a[0]][a[1]]*d/pairs[a[1]][a[0]]*fee/1e4*d:0;
     }}
 }
