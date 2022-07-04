@@ -13,7 +13,7 @@ contract Swap_93N{
     function setFee(uint percent)external OnlyOwner{
         fee=percent;
     }
-    function AddLiqudity(address[2]memory addr,uint[2]memory amt)external OnlyOwner{unchecked{
+    function AddLiqudity(address[2]memory addr,uint[2]memory amt)external payable OnlyOwner{unchecked{
         for(uint i=0;i<2;i++){
             IERC20(addr[i]).transferFrom(msg.sender,address(this),amt[i]);
             pairs[addr[i>0?1:0]][addr[i>0?0:1]]+=amt[i];
