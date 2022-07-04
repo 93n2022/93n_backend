@@ -10,21 +10,22 @@ contract Swap_93N{
     modifier OnlyOwner(){
         require(_owner==msg.sender);_;
     }
-    function addLiqudity(address[]memory a,uint[]memory amt)external payable OnlyOwner{unchecked{
-        IERC20(a[0]).transferFrom(msg.sender,address(this),amt[0]);
-        IERC20(a[1]).transferFrom(msg.sender,address(this),amt[1]);
-        (pairs[a[0]][a[1]]+=amt[0],pairs[a[1]][a[0]]+=amt[1]);
+    function AddLiqudity(address[2]memory a,uint[2]memory amt)external OnlyOwner{unchecked{
+        for(uint i=0;i<2;i++){
+            IERC20(a[i]).transferFrom(msg.sender,address(this),amt[i]);
+            pairs[a[i>0?1:0]][a[i>0?0:1]]+=amt[i];
+        }
     }}
-    function RemoveLiqudity(address[]memory a,uint[]memory amt)external payable OnlyOwner{unchecked{
-        require(_owner==msg.sender);
-        IERC20(a[0]).transferFrom(address(this),msg.sender,amt[0]);
-        IERC20(a[1]).transferFrom(address(this),msg.sender,amt[1]);
-        (pairs[a[0]][a[1]]-=amt[0],pairs[a[1]][a[0]]-=amt[1]);
-    }}
+    function RemoveLiqudity(address[2]memory a,uint[2]memory amt)external OnlyOwner{unchecked{
+        for(uint i=0;i<2;i++){
+            IERC20(a[i]).transferFrom(address(this),msg.sender,amt[i]);
+            pairs[a[i>0?1:0]][a[i>0?0:1]]-=amt[0];
+        }
+    }} 
     function setFee(uint percent)external OnlyOwner{
         fee=percent;
     }
-    function exchange(uint amt,address[]memory a)external payable{unchecked{
+    function exchange(uint amt,address[2]memory a)external{unchecked{
         uint amt2=getAmountsOut(amt,a);
         require(amt2>0);
         require(amt2<=pairs[a[1]][a[0]]);
@@ -32,12 +33,17 @@ contract Swap_93N{
         IERC20(a[1]).transferFrom(address(this),msg.sender,amt2);
         (pairs[a[0]][a[1]]+=amt,pairs[a[1]][a[0]]-=amt2);
     }}
-    function getAmountsOut(uint amt,address[]memory a)public view returns(uint){{
+    function getAmountsOut(uint amt,address[2]memory a)public view returns(uint){{
         uint _D=1e18;
         (uint d,uint _L1,uint _L2)=(amt%_D,pairs[a[0]][a[1]],pairs[a[1]][a[0]]);
+        require(amt<=_L1);
         (amt-=d,amt/=_D);
         for(uint i=0;i<amt;i++)(_L2-=_L2*_D/_L1,_L1+=_D);
         return(pairs[a[1]][a[0]]-_L2+(d>0?pairs[a[1]][a[0]]*d/pairs[a[0]][a[1]]:0))*fee/1e4;
     }}
+    function test()public pure returns(int){
+        int a=99;
+        return 80+(a*-1); 
+    }
 }
 //1000000000000000000
