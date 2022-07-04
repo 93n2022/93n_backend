@@ -13,17 +13,15 @@ contract Swap_93N{
     function setFee(uint percent)external OnlyOwner{
         fee=percent;
     }
-    function AddLiqudity(address[2]memory addr,uint[2]memory amt)external payable OnlyOwner{unchecked{
-        for(uint i=0;i<2;i++){
-            IERC20(addr[i]).transferFrom(msg.sender,address(this),amt[i]);
-            pairs[addr[i]][addr[i>0?0:1]]+=amt[i];
-        }
+    function AddLiqudity(address addr0,address addr1,uint amt0,uint amt1)external OnlyOwner{unchecked{
+        IERC20(addr0).transferFrom(msg.sender,address(this),amt0);
+        IERC20(addr1).transferFrom(msg.sender,address(this),amt1);
+        (pairs[addr0][addr1]+=amt0,pairs[addr1][addr0]+=amt1);
     }}
-    function RemoveLiqudity(address[2]memory addr,uint[2]memory amt)external OnlyOwner{unchecked{
-        for(uint i=0;i<2;i++){
-            IERC20(addr[i]).transferFrom(address(this),msg.sender,amt[i]);
-            pairs[addr[i>0?1:0]][addr[i>0?0:1]]-=amt[0];
-        } 
+    function RemoveLiqudity(address addr0,address addr1,uint amt0,uint amt1)external OnlyOwner{unchecked{
+        IERC20(addr0).transferFrom(address(this),msg.sender,amt0);
+        IERC20(addr1).transferFrom(address(this),msg.sender,amt1);
+        (pairs[addr0][addr1]-=amt0,pairs[addr1][addr0]-=amt1);
     }} 
     function exchange(uint amt,address addr0,address addr1)external{unchecked{
         uint amt2=getAmountsOut(amt,addr0,addr1);
