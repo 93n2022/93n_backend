@@ -25,21 +25,21 @@ contract Swap_93N{
             pairs[addr[i>0?1:0]][addr[i>0?0:1]]-=amt[0];
         } 
     }} 
-    function exchange(uint amt,address[2]memory addr)external{unchecked{
-        uint amt2=getAmountsOut(amt,addr);
+    function exchange(uint amt,address addr0,address addr1)external{unchecked{
+        uint amt2=getAmountsOut(amt,addr0,addr1);
         require(amt2>0);
-        require(amt2<=pairs[addr[1]][addr[0]]);
-        IERC20(addr[0]).transferFrom(msg.sender,address(this),amt);
-        IERC20(addr[1]).transferFrom(address(this),msg.sender,amt2);
-        (pairs[addr[0]][addr[1]]+=amt,pairs[addr[1]][addr[0]]-=amt2);
+        require(amt2<=pairs[addr1][addr0]);
+        IERC20(addr0).transferFrom(msg.sender,address(this),amt);
+        IERC20(addr1).transferFrom(address(this),msg.sender,amt2);
+        (pairs[addr0][addr1]+=amt,pairs[addr1][addr0]-=amt2);
     }}
-    function getAmountsOut(uint amt,address[2]memory addr)public view returns(uint){unchecked{
+    function getAmountsOut(uint amt,address addr0,address addr1)public view returns(uint){unchecked{
         uint _D=1e18;
-        (uint d,uint _L1,uint _L2)=(amt%_D,pairs[addr[0]][addr[1]],pairs[addr[1]][addr[0]]);
+        (uint d,uint _L1,uint _L2)=(amt%_D,pairs[addr0][addr1],pairs[addr1][addr0]);
         require(amt<=_L1);
         (amt-=d,amt/=_D); 
         for(uint i=0;i<amt;i++)(_L2-=_L2*_D/_L1,_L1+=_D);
-        return(pairs[addr[1]][addr[0]]-_L2+(d>0?pairs[addr[1]][addr[0]]*d/pairs[addr[0]][addr[1]]:0))*fee/1e4;
+        return(pairs[addr1][addr0]-_L2+(d>0?pairs[addr1][addr0]*d/pairs[addr0][addr1]:0))*fee/1e4;
     }}
 }
 //1000000000000000000
