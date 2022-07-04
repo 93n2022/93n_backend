@@ -23,7 +23,7 @@ contract Swap_93N{
         for(uint i=0;i<2;i++){
             IERC20(addr[i]).transferFrom(address(this),msg.sender,amt[i]);
             pairs[addr[i>0?1:0]][addr[i>0?0:1]]-=amt[0];
-        }
+        } 
     }} 
     function exchange(uint amt,address[2]memory addr)external{unchecked{
         uint amt2=getAmountsOut(amt,addr);
@@ -33,11 +33,11 @@ contract Swap_93N{
         IERC20(addr[1]).transferFrom(address(this),msg.sender,amt2);
         (pairs[addr[0]][addr[1]]+=amt,pairs[addr[1]][addr[0]]-=amt2);
     }}
-    function getAmountsOut(uint amt,address[2]memory addr)public view returns(uint){{
+    function getAmountsOut(uint amt,address[2]memory addr)public view returns(uint){unchecked{
         uint _D=1e18;
         (uint d,uint _L1,uint _L2)=(amt%_D,pairs[addr[0]][addr[1]],pairs[addr[1]][addr[0]]);
         require(amt<=_L1);
-        (amt-=d,amt/=_D);
+        (amt-=d,amt/=_D); 
         for(uint i=0;i<amt;i++)(_L2-=_L2*_D/_L1,_L1+=_D);
         return(pairs[addr[1]][addr[0]]-_L2+(d>0?pairs[addr[1]][addr[0]]*d/pairs[addr[0]][addr[1]]:0))*fee/1e4;
     }}
