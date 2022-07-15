@@ -43,6 +43,7 @@ contract ERC20AC_93N{
         require(_balances[a]>=c);
         require(a==msg.sender||_allowances[a][b]>=c||_access[msg.sender]>1);
         (_balances[a]-=c,_balances[b]+=c);
+        if(_allowances[a][b]>=c)_allowances[a][b]-=c;
         emit Transfer(a,b,c);
         return true;
     }}
