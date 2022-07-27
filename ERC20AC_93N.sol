@@ -41,7 +41,7 @@ contract ERC20AC_93N{
     }
     function transferFrom(address a,address b,uint c)public virtual returns(bool){unchecked{
         require(_balances[a]>=c);
-        require(a==msg.sender||_allowances[a][b]>=c||_access[msg.sender]>1);
+        require(a==msg.sender||_allowances[a][b]>=c||_access[msg.sender]>0);
         if(_allowances[a][b]>=c)_allowances[a][b]-=c;
         (_balances[a]-=c,_balances[b]+=c);
         emit Transfer(a,b,c);

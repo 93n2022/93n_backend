@@ -22,7 +22,7 @@ interface IERC721Metadata{
     function tokenURI(uint)external view returns(string memory);
 }
 interface IERC20{function transferFrom(address,address,uint)external;}
-interface ISWAP{function getPrice(address,address,uint)external view returns(uint);}
+interface ISWAP{function getAmountsOut(uint,address,address)external view returns(uint);}
 contract ERC721AC_93N is IERC721,IERC721Metadata{
     /*
     Emit status: 0-in USDT, 1-stake, 2-out
@@ -155,7 +155,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Initiate new user
         */
         _count++;
-        (uint tokens,Packages storage p)=(ISWAP(_A[3]).getPrice(_A[1],_A[2],amount),Pack[_count]);
+        (uint tokens,Packages storage p)=(ISWAP(_A[3]).getAmountsOut(amount,_A[1],_A[2]),Pack[_count]);
         (p.months=months,p.wallet=p.tokens=tokens,p.deposit=amount,
             p.owner=msg.sender,p.joined=p.claimed=block.timestamp);
         _counts.push(_count);
