@@ -1,6 +1,5 @@
 /***
 [DEPLOYMENT] CHANGE TOKEN ADDRESSES
-web3 - open up 1st level first, then info only open up accordingly
 ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC721{
