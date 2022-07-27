@@ -158,7 +158,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (uint tokens,Packages storage p)=(ISWAP(_A[3]).getPrice(_A[1],_A[2],amount),Pack[_count]);
         (p.months=months,p.wallet=tokens,p.deposit=amount,p.owner=msg.sender,p.joined=p.claimed=block.timestamp);
         _counts.push(_count);
-        p.rate=1; //TO BE CHANGED - e.g. num_of_tokens / amount
+        p.rate=tokens/amount;
         user[msg.sender].packages.push(_count);
         emit Transfer(address(0),msg.sender,_count);
         /*
