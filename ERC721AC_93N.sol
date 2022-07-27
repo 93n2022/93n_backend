@@ -38,7 +38,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     struct Packages{
         uint wallet;
         uint deposit;
-        uint rate;
+        uint tokens;
         uint claimed;
         uint joined;
         uint months;
@@ -156,9 +156,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         */
         _count++;
         (uint tokens,Packages storage p)=(ISWAP(_A[3]).getPrice(_A[1],_A[2],amount),Pack[_count]);
-        (p.months=months,p.wallet=tokens,p.deposit=amount,p.owner=msg.sender,p.joined=p.claimed=block.timestamp);
+        (p.months=months,p.wallet=p.tokens=tokens,p.deposit=amount,
+            p.owner=msg.sender,p.joined=p.claimed=block.timestamp);
         _counts.push(_count);
-        p.rate=tokens/amount;
         user[msg.sender].packages.push(_count);
         emit Transfer(address(0),msg.sender,_count);
         /*
@@ -203,7 +203,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                     Release 34%,34%,32% and split if set
                     Delete the contract upon last payment
                     */
-                    (amt,prm,s)=(p.deposit*p.rate*17/50/Split,p.months/9,2);
+                    (amt,prm,s)=(p.tokens*17/50/Split,p.months/9,2);
                     if(amt>=p.wallet){
                         amt=p.wallet;
                         delete Pack[i];
@@ -246,3 +246,6 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         return user[a].packages;
     }
 }
+
+//0x0000000000000000000000000000000000000000
+//1000000000000000000000
