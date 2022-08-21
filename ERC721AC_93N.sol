@@ -29,6 +29,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     mapping _A: 0-owner, 1-usdt, 2-93n, 3-swap, 4-tech
     Require all the addresses to get live price from PanCakeSwap
     */
+    modifier onlyOwner(){require(msg.sender==_A[0]);_;}
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status);
     struct User{
         address upline;
@@ -222,13 +223,18 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             _counts.pop();
         }
     }}
-    function SetSplit(uint num)external{
+    function SetSplit(uint num)external onlyOwner{
         /*
         Modifying the split to slow down the withdrawal
         */
-        require(msg.sender==_A[0]);
         Split=num;
     } 
+    function SetSWAPAddress(address a)external onlyOwner{
+        /*
+        Update live price address when listed
+        */
+        _A[3]=a;
+    }
     function getDownlines(address a)external view returns(address[]memory lv1,uint lv2,uint lv3){unchecked{
         lv1=user[a].downline;
         /*
