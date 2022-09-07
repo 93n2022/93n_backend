@@ -1,5 +1,11 @@
 /***
 [DEPLOYMENT] CHANGE TOKEN ADDRESSES
+Remove slow down process
+Change withdraw to individual
+Change tokenuri
+Change %
+Change to 180 days
+Add mergeable
 ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC721{
