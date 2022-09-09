@@ -48,6 +48,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     mapping(uint=>Node)public node;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
+    uint constant P=100; //Percentage to 1%
+    uint constant Q=10000; //Percentage to 0.01%
 
     constructor(address USDT,address T93N,address Swap, address Tech){
         /*
@@ -60,14 +62,14 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Initial node
         1- Red Lion, 2- Green Lion, 3- Blue Lion, 4-Super Unicorn, 5-Asset Eagle
         */
-        node[1].price=node[2].price=node[3].price=100;
         node[1].refA=node[2].refA=node[3].refA=node[4].refA=node[5].refA=[5,3,2];
+        node[1].price=node[2].price=node[3].price=100;
         node[4].refB=node[5].refB=[5,5,10];
         (node[1].count,node[1].shares,node[1].uri)=(250000,1,"QmbTNY7QpRPVqXa1t5274jwheJoSpLdyLtsXvxmFjqYj8Z");
         (node[2].count,node[2].shares,node[2].uri)=(150000,2,"QmU71emqLVtMWFEzwF4Y8qrs3NGkppHEUmzvfQdq6RJbAp");
         (node[3].count,node[3].shares,node[3].uri)=(100000,3,"Qme81vMnLTDjmZdk56coC7GzjbvfYFbjhsYYzPFXuMfwC5");
-        (node[4].count,node[4].uri)=(30000,"QmRoT9FfySEH9oZSbW6G5ARMnm1oBPPPa56TxVZvby9Cxe");
-        (node[5].count,node[5].uri)=(10000,"QmfAB1aLQbVx1vxo9mnaCF3GSEbYQZ25kDwt1dsWYJNDfq");
+        (node[4].count,node[4].price,node[4].uri)=(30000,1000,"QmRoT9FfySEH9oZSbW6G5ARMnm1oBPPPa56TxVZvby9Cxe");
+        (node[5].count,node[5].price,node[5].uri)=(10000,5000,"QmfAB1aLQbVx1vxo9mnaCF3GSEbYQZ25kDwt1dsWYJNDfq");
     }
     function supportsInterface(bytes4 a)external pure returns(bool){
         return a==type(IERC721).interfaceId||a==type(IERC721Metadata).interfaceId;
