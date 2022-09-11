@@ -3,10 +3,8 @@ Purchase: check upline eligible to matching
 Purchase: issue tokens to upline?
 Check withdrawal amount
 Change withdraw to individual
-Change tokenuri
-Change %
-Change to 180 days
-Add mergeable
+Change to 180/360 days
+Add mergeable (10/50)
 ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC721{event Transfer(address indexed from,address indexed to,uint indexed tokenId);event Approval(address indexed owner,address indexed approved,uint indexed tokenId);event ApprovalForAll(address indexed owner,address indexed operator,bool approved);function balanceOf(address)external view returns(uint);function ownerOf(uint)external view returns(address);function safeTransferFrom(address,address,uint)external;function transferFrom(address,address,uint)external;function approve(address,uint)external;function getApproved(uint)external view returns(address);function setApprovalForAll(address,bool)external;function isApprovedForAll(address,address)external view returns(bool);function safeTransferFrom(address,address,uint,bytes calldata)external;}
@@ -93,8 +91,22 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         }
     }}
     function getUplines(address d0)private view returns(address d1,address d2,address d3){
+        /*
+        This function returns the upline for the address
+        d1 being the direct and d3 is the furthest
+        If there is no d2 or d3, the upline is the last available one
+        */
         (d1=user[d0].upline,d2=user[d1].upline,d3=user[d2].upline);
     }
+    function checkMatchable(address a)private view returns(uint){unchecked{
+        /*
+        This function loop through the user's entire pack
+        Select check if there is any Super or Asset node
+        Return 1 if found and 0 if isn't
+        */
+        for(uint i;i<user[a].pack.length;i++)if(pack[user[a].pack[i]].node>2)return 1;
+        return 0;
+    }}
     function Purchase(address referral,uint n,uint c)external{unchecked{
         require((n<3?node[0].count+node[1].count+node[2].count:node[n].count)>=c,"Insufficient nodes");
         /*
