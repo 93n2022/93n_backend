@@ -1,13 +1,3 @@
-/***
-[DEPLOYMENT] CHANGE TOKEN ADDRESSES
-Remove slow down process
-Check withdrawal amount
-Change withdraw to individual
-Change tokenuri
-Change %
-Change to 180 days
-Add mergeable
-***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC721{
     event Transfer(address indexed from,address indexed to,uint indexed tokenId);
