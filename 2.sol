@@ -160,6 +160,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (address d1,address d2,address d3)=getUplines(msg.sender); 
         IERC20(_A[1]).transferFrom(msg.sender,address(this),amt);
         IERC20(_A[1]).transferFrom(address(this),d1,amt);
+        IERC20(_A[1]).transferFrom(address(this),d2,amt);
+        IERC20(_A[1]).transferFrom(address(this),d3,amt);
         /*
         Loop
         */
