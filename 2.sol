@@ -32,7 +32,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         string uri;
     }
     mapping(uint=>address)private _A;
-    mapping(address=>User)private user;
+    mapping(address=>User)public user;
     mapping(uint=>Node)private node;
     mapping(uint=>Pack)public pack;
     mapping(uint=>address)private _tokenApprovals;
@@ -92,21 +92,41 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }}
     function getUplines(address d0)private view returns(address d1,address d2,address d3){
         /*
-        This function returns the upline for the address
+        Returns the upline for the address
         d1 being the direct and d3 is the furthest
         If there is no d2 or d3, the upline is the last available one
         */
         (d1=user[d0].upline,d2=user[d1].upline,d3=user[d2].upline);
     }
+    function getDownlines(address a)external view returns(address[]memory lv1,uint lv2,uint lv3){unchecked{
+        /*
+        Loop through all level 2 and level 3 downlines
+        Create new array counts
+        Set length and reset variables 
+        */
+        lv1=user[a].downline;
+        for(uint i=0;i<lv1.length;i++){
+            address[]memory c1=user[lv1[i]].downline;
+            lv2+=c1.length;
+            for(uint j=0;j<c1.length;j++)lv3+=user[c1[j]].downline.length;
+        }
+    }}
     function checkMatchable(address a)private view returns(uint){unchecked{
         /*
-        This function loop through the user's entire pack
+        Loop through the user's entire pack
         Select check if there is any Super or Asset node
         Return 1 if found and 0 if isn't
         */
         for(uint i;i<user[a].pack.length;i++)if(pack[user[a].pack[i]].node>2)return 1;
         return 0;
     }}
+    function getStaking()public view returns(uint){
+        /*
+        Calculate how much tbe sender should be getting
+        Loop through all existing nodes and check the expiry
+        */
+        
+    }
     function Purchase(address referral,uint n,uint c)external{unchecked{
         require((n<3?node[0].count+node[1].count+node[2].count:node[n].count)>=c,"Insufficient nodes");
         /*
