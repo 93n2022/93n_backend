@@ -271,7 +271,12 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Transfer to upline's wallet if they are eligible
         */
         IERC20(_A[2]).transferFrom(address(this),msg.sender,x);
-        /*******************/
+        address[3]memory d;
+        (d[0],d[1],d[2])=getUplines(msg.sender); 
+        for(uint i;i<3;i++){
+            uint cm=checkMatchable(d[i]);
+            if(cm>0)IERC20(_A[2]).transferFrom(address(this),d[i],x*refB[i]/P);
+        }
     }
     function Merging(uint[]calldata nfts)external{
         require(nfts.length==10||nfts.length==50,"Incorrect nodes count");
