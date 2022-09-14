@@ -1,64 +1,20 @@
 /***
-All the transfer functions please check
+Share portion distribution
 ***/
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
-interface IERC721{
-    event Transfer(address indexed from,address indexed to,uint indexed tokenId);
-    event Approval(address indexed owner,address indexed approved,uint indexed tokenId);
-    event ApprovalForAll(address indexed owner,address indexed operator,bool approved);
-    function balanceOf(address)external view returns(uint);
-    function ownerOf(uint)external view returns(address);
-    function safeTransferFrom(address,address,uint)external;
-    function transferFrom(address,address,uint)external;
-    function approve(address,uint)external;
-    function getApproved(uint)external view returns(address);
-    function setApprovalForAll(address,bool)external;
-    function isApprovedForAll(address,address)external view returns(bool);
-    function safeTransferFrom(address,address,uint,bytes calldata)external;
-}
-interface IERC721Metadata{
-    function name()external view returns(string calldata);
-    function symbol()external view returns(string calldata);
-    function tokenURI(uint)external view returns(string calldata);
-}
-interface IERC20{
-    function transferFrom(address,address,uint)external;
-    function balanceOf(address)external view returns(uint256);
-}
-interface ISWAP{
-    function getAmountsOut(uint,address,address)external view returns(uint);
-}
-contract ERC721AC_93N is IERC721,IERC721Metadata{
-    struct User{
-        address upline;
-        address[]downline;  
-        uint[]pack;
-    }
-    struct Pack{
-        uint node;
-        uint t93n;
-        uint claimed;
-        uint minted;
-        address owner;
-    }
-    struct Node{
-        uint price;
-        uint count;
-        uint factor; //1-3: shares, 4-5: staking %
-        uint period;
-        string uri;
-    }
+import"2a.sol";
+contract ERC721AC_93N is IERC721,IERC721Metadata,Attach{
     mapping(uint=>address)private _A;
-    mapping(address=>User)public user;
     mapping(uint=>Node)private node;
-    mapping(uint=>Pack)public pack;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
+    mapping(address=>User)public user;
+    mapping(uint=>Pack)public pack;
     uint constant private P=10000; //Percentage
     uint[3]private refA=[500,300,200];
     uint[3]private refB=[500,500,1e3];
-    uint public Share;
     uint private _count; //For unique NFT
+    uint public Share;
 
     constructor(address USDT,address T93N,address Swap, address Tech){
         /*
@@ -118,17 +74,18 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     function safeTransferFrom(address a,address b,uint c,bytes calldata)external override{
         transferFrom(a,b,c);
     }
-    function transferFrom(address a,address b,uint c)public override{unchecked{
+    function transferFrom(address a,address b,uint p)public override{unchecked{
         /*
         Entire user will be duplicated to the new user
         The old user will be deleted
         */
-        require(a==pack[c].owner||getApproved(c)==a||isApprovedForAll(pack[c].owner,a));
-        (_tokenApprovals[c],pack[c].owner)=(address(0),b);
-        user[b].pack.push(c);
-        popPackages(a,c);
-        emit Approval(pack[c].owner,b,c);
-        emit Transfer(a,b,c);
+        require(a==pack[p].owner||getApproved(p)==a||isApprovedForAll(pack[p].owner,a));
+        (_tokenApprovals[p],pack[p].owner)=(address(0),b);
+        user[b].pack.push(p);
+        pack[p].owner=b;
+        popPackages(a,p);
+        emit Approval(pack[p].owner,b,p);
+        emit Transfer(a,b,p);
     }}
 
     function popPackages(address a,uint p)private{unchecked{
@@ -249,10 +206,13 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 if(expiry<block.timestamp)
                     x+=pack[p[i]].t93n*node[p[i]].factor/P*(block.timestamp-pack[p[i]].claimed)/86400;
                 else{
-                    if(expiry+2628e3>block.timestamp&&expiry+2628e3>pack[p[i]].claimed)x+=pack[p[i]].t93n*2/5;
-                    if(expiry+5256e3>block.timestamp&&expiry+5256e3>pack[p[i]].claimed)x+=pack[p[i]].t93n/2;
-                    if(expiry+7884e3>block.timestamp&&expiry+5256e3>pack[p[i]].claimed){
-                        x+=pack[p[i]].t93n;
+                    uint y=expiry+2628e3;
+                    if(y>block.timestamp&&y>pack[p[i]].claimed)(y=pack[p[i]].t93n*2/5,x+=y,pack[p[i]].t93n-=y);
+                    y=expiry+5256e3;
+                    if(y>block.timestamp&&y>pack[p[i]].claimed)(y=pack[p[i]].t93n/2,x+=y,pack[p[i]].t93n-=y);
+                    y=expiry+7884e3;
+                    if(y>block.timestamp&&y>pack[p[i]].claimed){
+                        (y=pack[p[i]].t93n,x+=y,pack[p[i]].t93n-=y);
                         if(pack[p[i]].node==4){
                             popPackages(msg.sender,p[i]);
                             emit Transfer(msg.sender,address(0),p[i]);
@@ -261,7 +221,6 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                         
                     }
                 }
-                if(z<1)pack[p[i]].t93n-=x;
             }
             if(z<1)pack[p[i]].claimed=block.timestamp;
         }
