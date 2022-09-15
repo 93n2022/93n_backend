@@ -56,18 +56,18 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
     mapping(address=>User)public user;
     mapping(uint=>Pack)public pack;
-    uint constant private P=10000; //Percentage
-    uint[3]private refA=[500,300,200];
-    uint[3]private refB=[500,500,1e3];
+    uint constant private P=1e4; //Percentage
+    uint[3]private refA=[5e2,3e2,2e2];
+    uint[3]private refB=[5e2,5e2,1e3];
     uint private _count; //For unique NFT
     uint public Share;
 
     constructor(address USDT,address T93N,address Swap, address Tech){
         /*
-        Add permanent packages for 0 and 4 to bypass payment checking
-        Initialise node: 0- Red Lion, 1- Green Lion, 2- Blue Lion, 3-Super Unicorn, 4-Asset Eagle
+        Add permanent packages for 0 and 4 to bypass payment checking and enable withdrawal
+        Initialise node: 0-Red Lion, 1-Green Lion, 2-Blue Lion, 3-Super Unicorn, 4-Asset Eagle
         */
-        (_A[0]=user[msg.sender].upline=msg.sender,_A[1]=USDT,_A[2]=T93N,_A[3]=Swap,_A[4]=Tech);
+        (_A[0],_A[1],_A[2],_A[3],_A[4],pack[0].node)=(user[msg.sender].upline=msg.sender,USDT,T93N,Swap,Tech,3);
         user[_A[0]].pack.push(0);
         user[_A[4]].pack.push(0);
         (node[0].count,node[0].price,node[0].factor,node[0].uri)=
@@ -196,12 +196,13 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         require((n<3?node[0].count+node[1].count+node[2].count:node[n].count)>=c,"Insufficient nodes");
         /*
         Tabulate total and fetch pricing
-        Set upline if non-existence and if no referral set to admin 
+        Set upline if non-existence, if no referral or no package set to admin 
         */
         uint amt=node[n].price*c;
         uint t93n=ISWAP(_A[3]).getAmountsOut(amt,_A[1],_A[2]);
         if(user[msg.sender].upline==address(0)){
-            user[msg.sender].upline=referral==address(0)||referral==msg.sender?_A[0]:referral;
+            user[msg.sender].upline=referral==
+                address(0)||referral==msg.sender||user[referral].pack.length<1?_A[0]:referral;
             user[user[msg.sender].upline].downline.push(msg.sender);
         }
         /*
