@@ -1,6 +1,8 @@
 /***
 Share portion distribution
 ***/
+//0x0000000000000000000000000000000000000000
+//1000000000000000000000
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC721{
     event Transfer(address indexed from,address indexed to,uint indexed tokenId);

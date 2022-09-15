@@ -40,4 +40,3 @@ contract Swap_93N{
         return(pairs[addr1][addr0]-_L2+(d>0?pairs[addr1][addr0]*d/pairs[addr0][addr1]:0))*fee/1e4;
     }}
 }
-//1000000000000000000
