@@ -212,10 +212,10 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Transfer USDT to this contract as checking and redistribution
         Check if user have super or asset node and give extra staking
         */
-        //IERC20(_A[1]).transferFrom(msg.sender,address(this),amt);
+        IERC20(_A[1]).transferFrom(msg.sender,address(this),amt);
         address[4]memory d=getUplines(msg.sender); 
         for(uint i;i<d.length;i++){
-            //IERC20(_A[1]).transferFrom(address(this),d[i],amt*refA[i]/P);
+            IERC20(_A[1]).transferFrom(address(this),d[i],amt*refA[i]/P);
             uint cm=checkMatchable(d[i]);
             if(cm>0)pack[cm].t93n+=refB[i]/P;
         }
