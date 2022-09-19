@@ -238,7 +238,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             node[n].count--;
         }
     }}
-    function Withdraw()external{
+    function Withdraw()external{unchecked{
         /*
         Calculate how much tbe sender should be getting
         Loop through all existing nodes and calculate since last claimed
@@ -286,8 +286,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             uint cm=checkMatchable(d[i]);
             if(cm>0)IERC20(_A[2]).transferFrom(address(this),d[i],x*refB[i]/P);
         }
-    }
-    function Merging(uint[]calldata nfts)external{
+    }}
+    function Merging(uint[]calldata nfts)external{unchecked{
         require(nfts.length==10||nfts.length==50,"Incorrect nodes count");
         /*
         Combines nodes to Super or Asset
@@ -303,7 +303,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint n=nfts.length==10?3:4;
         uint t93n=ISWAP(_A[3]).getAmountsOut(node[n].price,_A[1],_A[2]);
         mintNFT(n,t93n);
-    }
+    }}
     function RenewSuperNode(uint n)external{unchecked{
         Pack storage p=pack[n];
         require(p.owner==msg.sender,"Incorrect owner");
