@@ -211,13 +211,14 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Transfer USDT to this contract as checking and redistribution
         Check if user have super or asset node and give extra staking
         */
-        IERC20(_A[1]).transferFrom(msg.sender,address(this),amt);
+        //IERC20(_A[1]).transferFrom(msg.sender,address(this),amt);
         address[3]memory d=getUplines(msg.sender); 
         for(uint i;i<3;i++){
-            IERC20(_A[1]).transferFrom(address(this),d[i],amt*refA[i]/P);
+            //IERC20(_A[1]).transferFrom(address(this),d[i],amt*refA[i]/P);
             uint cm=checkMatchable(d[i]);
             if(cm>0)pack[cm].t93n+=refB[i]/P;
         }
+        //IERC20(_A[1]).transferFrom(address(this),_A[4],amt*1e3/P);
         /*
         Loop to generate nodes (random if <3)
         Check if node supply is valid and deduct after allocated
@@ -315,12 +316,12 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         IERC20(_A[2]).transferFrom(msg.sender,address(this),t93n);
         (p.t93n,p.minted)=(t93n,p.claimed=block.timestamp);
     }}
-    function modLiquidity(uint n,uint m)external{unchecked{
+    function modLiquidity(uint t,uint n,uint m)external{unchecked{
         /*
         Add or remove coin
         */
         require(_A[0]==msg.sender,"Invalid access");
-        if(n>0)IERC20(_A[2]).transferFrom(msg.sender,address(this),n);
-        else IERC20(_A[2]).transferFrom(address(this),msg.sender,m);
+        if(n>0)IERC20(_A[t]).transferFrom(msg.sender,address(this),n);
+        else IERC20(_A[t]).transferFrom(address(this),msg.sender,m);
     }}
 } 
