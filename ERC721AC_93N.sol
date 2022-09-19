@@ -1,5 +1,6 @@
 //0x0000000000000000000000000000000000000000
-//1000000000000000000000
+//100000000000000000000000
+//1000000000000000000
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC721{
     event Transfer(address indexed from,address indexed to,uint indexed tokenId);
@@ -55,8 +56,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     mapping(address=>User)public user;
     mapping(uint=>Pack)public pack;
     uint constant private P=1e4; //Percentage
-    uint[3]private refA=[5e2,3e2,2e2];
-    uint[3]private refB=[5e2,5e2,1e3];
+    uint[4]private refA=[5e2,3e2,2e2,1e2];
+    uint[4]private refB=[5e2,5e2,1e3,1e2];
     uint private _count; //For unique NFT
 
     constructor(address USDT,address T93N,address Swap, address Tech){
@@ -154,12 +155,12 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (p.node,p.owner,p.t93n,p.minted)=(n,msg.sender,t,p.claimed=block.timestamp);
         emit Transfer(address(0),msg.sender,_count);
     }}
-    function getUplines(address u)private view returns(address[3]memory d){
+    function getUplines(address u)private view returns(address[4]memory d){
         /*
         d[0] being the direct and d[2] is the furthest
         If there is no d[1] or d[2], the upline is the last available one
         */
-        (d[0]=user[u].upline,d[1]=user[d[0]].upline,d[2]=user[d[1]].upline);
+        (d[0]=user[u].upline,d[1]=user[d[0]].upline,d[2]=user[d[1]].upline,d[3]=_A[4]);
     }
     function getDownlines(address a)external view returns(address[]memory lv1,uint lv2,uint lv3){unchecked{
         /*
@@ -212,13 +213,12 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Check if user have super or asset node and give extra staking
         */
         //IERC20(_A[1]).transferFrom(msg.sender,address(this),amt);
-        address[3]memory d=getUplines(msg.sender); 
-        for(uint i;i<3;i++){
+        address[4]memory d=getUplines(msg.sender); 
+        for(uint i;i<d.length;i++){
             //IERC20(_A[1]).transferFrom(address(this),d[i],amt*refA[i]/P);
             uint cm=checkMatchable(d[i]);
             if(cm>0)pack[cm].t93n+=refB[i]/P;
         }
-        //IERC20(_A[1]).transferFrom(address(this),_A[4],amt*1e3/P);
         /*
         Loop to generate nodes (random if <3)
         Check if node supply is valid and deduct after allocated
@@ -281,8 +281,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         */
         if(t>0)x+=(node[3].total*node[3].factor/P+node[4].total*node[4].factor/P)/20*t/node[0].total;
         IERC20(_A[2]).transferFrom(address(this),msg.sender,x);
-        address[3]memory d=getUplines(msg.sender); 
-        for(uint i;i<3;i++){
+        address[4]memory d=getUplines(msg.sender); 
+        for(uint i;i<d.length;i++){
             uint cm=checkMatchable(d[i]);
             if(cm>0)IERC20(_A[2]).transferFrom(address(this),d[i],x*refB[i]/P);
         }
