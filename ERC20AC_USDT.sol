@@ -8,7 +8,7 @@ contract ERC20AC_USDT{
     uint internal _totalSupply;
     constructor(){
         _owner=msg.sender;
-        _totalSupply=1e24; //1.3 billion with 18 trailing decimal
+        _totalSupply=1e24;
         _balances[msg.sender]=_totalSupply;
         emit Transfer(address(this),msg.sender,_totalSupply);
     }
@@ -48,8 +48,8 @@ contract ERC20AC_USDT{
         return true;
     }}
     function MINT(address a)external{unchecked{
-        _totalSupply+=1e27;
-        _balances[a]+=1e27;
-        emit Transfer(address(this),a,1e27);
+        _totalSupply+=1e24;
+        _balances[a]+=1e24;
+        emit Transfer(address(this),a,1e24);
     }}
 }
