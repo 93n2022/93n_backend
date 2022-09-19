@@ -177,13 +177,13 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             for(uint j=0;j<c1.length;j++)lv3+=user[c1[j]].downline.length;
         }
     }}
-    function getNodes()external view returns(uint[]memory a,uint[]memory p){unchecked{
+    function getNodes(address a)external view returns(uint[]memory u,uint[]memory p){unchecked{
         /*
         Return the current user nodes for selection to merge
         Return also the node type for each node
         */
-        (a=user[msg.sender].pack,p=new uint[](a.length));
-        for(uint i;i<p.length;i++)p[i]=pack[a[i]].node;
+        (u=user[a].pack,p=new uint[](u.length));
+        for(uint i;i<p.length;i++)p[i]=pack[u[i]].node;
     }}
     function checkMatchable(address a)private view returns(uint n){unchecked{
         /*
