@@ -49,6 +49,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint period;
         string uri;
     }
+    event Payout(address indexed from,address indexed to,uint amount,uint indexed status); //0-U, 1-N
     mapping(uint=>address)private _A;
     mapping(uint=>Node)private node;
     mapping(uint=>address)private _tokenApprovals;
@@ -215,7 +216,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         IERC20(_A[1]).transferFrom(msg.sender,address(this),amt);
         address[4]memory d=getUplines(msg.sender); 
         for(uint i;i<d.length;i++){
-            IERC20(_A[1]).transferFrom(address(this),d[i],amt*refA[i]/P);
+            uint amtP=amt*refA[i]/P;
+            IERC20(_A[1]).transferFrom(address(this),d[i],amtP);
+            emit Payout(msg.sender,d[i],amtP,0);
             uint cm=checkMatchable(d[i]);
             if(cm>0)pack[cm].t93n+=refB[i]/P;
         }
@@ -284,7 +287,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         address[4]memory d=getUplines(msg.sender); 
         for(uint i;i<d.length;i++){
             uint cm=checkMatchable(d[i]);
-            if(cm>0)IERC20(_A[2]).transferFrom(address(this),d[i],x*refB[i]/P);
+            if(cm>0){
+                uint amtP=x*refB[i]/P;
+                IERC20(_A[2]).transferFrom(address(this),d[i],amtP);
+                emit Payout(msg.sender,d[i],amtP,1);
+            }
         }
     }}
     function Merging(uint[]calldata nfts)external{unchecked{

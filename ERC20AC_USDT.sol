@@ -8,6 +8,9 @@ contract ERC20AC_USDT{
     uint internal _totalSupply;
     constructor(){
         _owner=msg.sender;
+        _totalSupply=1e24; //1.3 billion with 18 trailing decimal
+        _balances[msg.sender]=_totalSupply;
+        emit Transfer(address(this),msg.sender,_totalSupply);
     }
     function name()external view virtual returns(string memory){
         return"USDT Mock";
