@@ -54,19 +54,19 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     mapping(uint=>Node)private node;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
-    mapping(address=>User)public user;
+    mapping(address=>User)private user;
     mapping(uint=>Pack)public pack;
     uint constant private P=1e4; //Percentage
     uint[4]private refA=[5e2,3e2,2e2,1e2];
     uint[4]private refB=[5e2,5e2,1e3,1e2];
     uint private _count; //For unique NFT
 
-    constructor(address USDT,address T93N,address Swap, address Tech){
+    constructor(address[4]memory A){
         /*
         Add permanent packages for 0 and 4 to bypass payment checking and enable withdrawal
         Initialise node: 0-Red Lion, 1-Green Lion, 2-Blue Lion, 3-Super Unicorn, 4-Asset Eagle
         */
-        (_A[0],_A[1],_A[2],_A[3],_A[4],pack[0].node)=(user[msg.sender].upline=msg.sender,USDT,T93N,Swap,Tech,3);
+        (_A[0],_A[1],_A[2],_A[3],_A[4],pack[0].node)=(user[msg.sender].upline=msg.sender,A[0],A[1],A[2],A[3],3);
         user[_A[0]].pack.push(0);
         user[_A[4]].pack.push(0);
         (node[0].count,node[0].price,node[0].factor,node[0].uri)=
@@ -216,10 +216,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         IERC20(_A[1]).transferFrom(msg.sender,address(this),amt);
         address[4]memory d=getUplines(msg.sender); 
         for(uint i;i<d.length;i++){
-            uint amtP=amt*refA[i]/P;
+            (uint amtP,uint cm)=(amt*refA[i]/P,checkMatchable(d[i]));
             IERC20(_A[1]).transferFrom(address(this),d[i],amtP);
             emit Payout(msg.sender,d[i],amtP,0);
-            uint cm=checkMatchable(d[i]);
             if(cm>0)pack[cm].t93n+=refB[i]/P;
         }
         /*
