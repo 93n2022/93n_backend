@@ -292,6 +292,39 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             }
         }
     }}
+    function checkWithdrawal()external returns(uint[2]memory a){
+        uint x;
+        uint t;
+        uint[]memory p=user[msg.sender].pack;
+        for(uint i;i<p.length;i++){
+            uint z;
+            Pack storage s=pack[p[i]];
+            if(s.node<3)t+=node[p[i]].factor;
+            else{
+                uint expiry=s.minted+node[p[i]].period;
+                a[0]=expiry;
+                a[1]=node[p[i]].period;
+                if(expiry>block.timestamp)t+=s.t93n*node[p[i]].factor/P*(block.timestamp-s.claimed)/86400;
+                else{
+                    uint y=expiry+2628e3;
+                    if(y>block.timestamp&&y>s.claimed)(y=s.t93n*2/5,x+=y,s.t93n-=y);
+                    y=expiry+5256e3;
+                    if(y>block.timestamp&&y>s.claimed)(y=s.t93n/2,x+=y,s.t93n-=y);
+                    y=expiry+7884e3;
+                    if(y>block.timestamp&&y>s.claimed){
+                        (y=s.t93n,x+=y,s.t93n-=y);
+                        if(s.node==4){
+                            popPackages(msg.sender,p[i]);
+                            emit Transfer(msg.sender,address(0),p[i]);
+                            z=1;
+                        }
+                        
+                    }
+                }
+            }
+            if(z<1)s.claimed=block.timestamp;
+        }
+    }
     function Merging(uint[]calldata nfts)external{unchecked{
         require(nfts.length==10||nfts.length==50,"Incorrect nodes count");
         /*
