@@ -52,7 +52,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         string uri;
     }
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status); //0-U, 1-N
-    mapping(uint=>address)private _A;
+    mapping(uint=>address)private _A; //0-Admin,, 1-USDT, 2-93N, 3-Swap, 4-Tech
     mapping(uint=>Node)private node;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
