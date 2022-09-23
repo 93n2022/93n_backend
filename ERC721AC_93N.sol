@@ -310,7 +310,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint t93n=ISWAP(_A[3]).getAmountsOut(node[n].price,_A[1],_A[2]);
         mintNFT(n,t93n);
     }}
-    function renewSuperNode(uint n)external{unchecked{
+    function renew(uint n)external{unchecked{
         Pack storage p=pack[n];
         require(p.owner==msg.sender,"Incorrect owner");
         require(p.claimed+node[p.node].period<block.timestamp,"Node not expired yet");
