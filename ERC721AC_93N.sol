@@ -157,6 +157,19 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (p.node,p.owner,p.t93n,p.minted)=(n,msg.sender,t,p.claimed=block.timestamp);
         emit Transfer(address(0),msg.sender,_count);
     }}
+    
+    function checkMatchable(address a)private view returns(uint n){unchecked{
+        /*
+        Loop through the user's entire pack
+        Select check if there is any Super or Asset node
+        Return the node number with the longest expiry
+        */
+        (uint largest,uint[]memory p)=(0,user[a].pack);
+        for(uint i;i<p.length;i++){
+            uint tempL=pack[p[i]].minted+node[pack[p[i]].node].period;
+            if(pack[p[i]].node>2&&tempL>largest)(n,largest)=(p[i],tempL);
+        }
+    }}
     function getUplines(address u)private view returns(address[4]memory d){
         /*
         d[0] being the direct and d[2] is the furthest
@@ -185,19 +198,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (u=user[a].pack,p=new uint[](u.length));
         for(uint i;i<p.length;i++)p[i]=pack[u[i]].node;
     }}
-    function checkMatchable(address a)private view returns(uint n){unchecked{
-        /*
-        Loop through the user's entire pack
-        Select check if there is any Super or Asset node
-        Return the node number with the longest expiry
-        */
-        (uint largest,uint[]memory p)=(0,user[a].pack);
-        for(uint i;i<p.length;i++){
-            uint tempL=pack[p[i]].minted+node[pack[p[i]].node].period;
-            if(pack[p[i]].node>2&&tempL>largest)(n,largest)=(p[i],tempL);
-        }
-    }}
-    function Purchase(address referral,uint n,uint c)external{unchecked{
+    function purchase(address referral,uint n,uint c)external{unchecked{
         require((n<3?node[0].count+node[1].count+node[2].count:node[n].count)>=c,"Insufficient nodes");
         /*
         Tabulate total and fetch pricing
@@ -241,7 +242,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             node[n].count--;
         }
     }}
-    function Withdraw()external{unchecked{
+    function withdraw()external{unchecked{
         /*
         Calculate how much tbe sender should be getting
         Loop through all existing nodes and calculate since last claimed
@@ -292,7 +293,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             }
         }
     }}
-    function Merging(uint[]calldata nfts)external{unchecked{
+    function merging(uint[]calldata nfts)external{unchecked{
         require(nfts.length==10||nfts.length==50,"Incorrect nodes count");
         /*
         Combines nodes to Super or Asset
@@ -309,10 +310,10 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint t93n=ISWAP(_A[3]).getAmountsOut(node[n].price,_A[1],_A[2]);
         mintNFT(n,t93n);
     }}
-    function RenewSuperNode(uint n)external{unchecked{
+    function renewSuperNode(uint n)external{unchecked{
         Pack storage p=pack[n];
         require(p.owner==msg.sender,"Incorrect owner");
-        require(p.claimed+node[p.node].period>block.timestamp,"Node not expired yet");
+        require(p.claimed+node[p.node].period<block.timestamp,"Node not expired yet");
         /*
         Renew Super node upon expiry + 1 month
         Reset all settings and refill the node like new
