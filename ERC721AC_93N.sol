@@ -284,12 +284,10 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         if(t>0)x+=t/node[0].total*(node[3].total*node[3].factor/P+node[4].total*node[4].factor/P)*500/P;
         IERC20(_A[2]).transferFrom(address(this),msg.sender,x);
         address[4]memory d=getUplines(msg.sender); 
-        for(uint i;i<d.length;i++){
-            if(checkMatchable(d[i])>0){
-                uint amtP=x*refB[i]/P;
-                IERC20(_A[2]).transferFrom(address(this),d[i],amtP);
-                emit Payout(msg.sender,d[i],amtP,1);
-            }
+        for(uint i;i<d.length;i++)if(checkMatchable(d[i])>0){
+            uint amtP=x*refB[i]/P;
+            IERC20(_A[2]).transferFrom(address(this),d[i],amtP);
+            emit Payout(msg.sender,d[i],amtP,1);
         }
     }}
     function merging(uint[]calldata nfts)external{unchecked{
@@ -321,11 +319,12 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         IERC20(_A[2]).transferFrom(msg.sender,address(this),t93n);
         (p.t93n,p.minted)=(t93n,p.claimed=block.timestamp);
     }}
-    function modLiquidity(uint t,uint n)external{unchecked{
+    function modLiquidity(uint t,uint n,uint m)external{unchecked{
         /*
         Remove excess coin
         */
         require(_A[0]==msg.sender,"Invalid access");
-        IERC20(_A[t]).transferFrom(address(this),msg.sender,n);
+        n>0?IERC20(_A[t]).transferFrom(address(this),msg.sender,n):
+            IERC20(_A[t]).transferFrom(msg.sender,address(this),m);
     }}
 } 
