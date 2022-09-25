@@ -321,7 +321,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }}
     function modLiquidity(uint t,uint n,uint m)external{unchecked{
         /*
-        Remove excess coin
+        Add or remove excess coin
         */
         require(_A[0]==msg.sender,"Invalid access");
         n>0?IERC20(_A[t]).transferFrom(address(this),msg.sender,n):
