@@ -322,12 +322,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         IERC20(_A[2]).transferFrom(msg.sender,address(this),t93n);
         (p.t93n,p.minted)=(t93n,p.claimed=block.timestamp);
     }}
-    function modLiquidity(uint t,uint n,uint m)external{unchecked{
+    function modLiquidity(uint t,uint n)external{unchecked{
         /*
-        Add or remove coin
+        Remove excess coin
         */
         require(_A[0]==msg.sender,"Invalid access");
-        if(n>0)IERC20(_A[t]).transferFrom(msg.sender,address(this),n);
-        else IERC20(_A[t]).transferFrom(address(this),msg.sender,m);
+        IERC20(_A[t]).transferFrom(address(this),msg.sender,n);
     }}
 } 
