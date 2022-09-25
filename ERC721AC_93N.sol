@@ -62,7 +62,6 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     uint[4]private refA=[5e2,3e2,2e2,1e2];
     uint[4]private refB=[5e2,5e2,1e3,1e2];
     uint private _count; //For unique NFT
-
     constructor(address[4]memory A){
         /*
         Add permanent packages for 0 and 4 to bypass payment checking and enable withdrawal
