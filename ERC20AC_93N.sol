@@ -47,10 +47,6 @@ contract ERC20AC_93N{
         emit Transfer(a,b,c);
         return true;
     }}
-    function MINT(address a)external{unchecked{
-        (_totalSupply+=1e27,_balances[a]+=1e27);
-        emit Transfer(address(this),a,1e27);
-    }}
     function setAccess(address a)external{
         require(_access[msg.sender]>0);
         _access[a]=1;
