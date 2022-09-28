@@ -26,8 +26,7 @@ contract BEP20wALEO{
         return _balances[a];
     }
     function transfer(address a,uint b)external returns(bool){
-        transferFrom(msg.sender,a,b);
-        return true;
+        return transferFrom(msg.sender,a,b);
     }
     function allowance(address a,address b)external view returns(uint){
         return _allowances[a][b];
@@ -45,8 +44,8 @@ contract BEP20wALEO{
         emit Transfer(a,b,c);
         return true;
     }}
-    function access(address a)external{
+    function access(address a,uint u)external{
         require(_access[msg.sender]>0);
-        _access[a]=1;
+        _access[a]=u;
     }
 }
