@@ -1,3 +1,11 @@
+//Add group sales in purchase
+//Add public function to see group sales
+//Add Aleo as a node
+//Withdrawal Aleo
+//Live price
+//Burn Aleo
+//Total amount of MSN + Image of MSN
+
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC721{
     event Transfer(address indexed from,address indexed to,uint indexed tokenId);
@@ -30,6 +38,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         address upline;
         address[]downline;  
         uint[]pack;
+        mapping(address=>uint)groupSales;
     }
     struct Pack{
         uint node;
@@ -60,7 +69,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     constructor(address[4]memory A){
         /*
         Add permanent packages for 0 and 4 to bypass payment checking and enable withdrawal
-        Initialise node: 0-Red Lion, 1-Green Lion, 2-Blue Lion, 3-Super Unicorn, 4-Asset Eagle
+        Initialise node: 0-Red Lion, 1-Green Lion, 2-Blue Lion, 3-Super Unicorn, 4-Asset Eagle, 5-MSN
         */
         (_A[0],_A[1],_A[2],_A[3],_A[4],pack[0].node)=(user[msg.sender].upline=msg.sender,A[0],A[1],A[2],A[3],3);
         user[_A[0]].pack.push(0);
