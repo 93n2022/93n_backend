@@ -1,6 +1,3 @@
-//Burn Aleo
-//Total amount of MSN + Image of MSN
-
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC721{
     event Transfer(address indexed from,address indexed to,uint indexed tokenId);
@@ -150,11 +147,12 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Update main counter and total count per node type
         Update user pack
         Update pack details
+        User don't receive any 93n if it is using Aleo
         */
         (_count++,node[n<3?0:n].total+=n<3?node[n].factor:1);
         user[msg.sender].pack.push(_count);
         Pack storage p=pack[_count];
-        (p.node,p.owner,p.t93n,p.minted)=(n,msg.sender,t,p.claimed=block.timestamp);
+        (p.node,p.owner,p.t93n,p.minted)=(n,msg.sender,n<5?t:0,p.claimed=block.timestamp);
         emit Transfer(address(0),msg.sender,_count);
     }}
     function checkMatchable(address a)private view returns(uint n){unchecked{
@@ -271,9 +269,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                     y=expiry+5256e3;
                     if(y<block.timestamp&&y>s.claimed)(y=s.t93n/2,x+=y,s.t93n-=y);
                     y=expiry+7884e3;
-                    if(y<block.timestamp&&y>s.claimed){
+                    if((y<block.timestamp&&y>s.claimed)||s.node>4){
                         (y=s.t93n,x+=y,s.t93n-=y);
-                        if(s.node==4){
+                        if(s.node>3){
                             popPackages(msg.sender,p[i]);
                             emit Transfer(msg.sender,address(0),p[i]);
                             z=1;
