@@ -1,4 +1,3 @@
-//Add group sales in purchase
 //Add public function to see group sales
 //Add Aleo as a node
 //Withdrawal Aleo
@@ -162,7 +161,6 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (p.node,p.owner,p.t93n,p.minted)=(n,msg.sender,t,p.claimed=block.timestamp);
         emit Transfer(address(0),msg.sender,_count);
     }}
-    
     function checkMatchable(address a)private view returns(uint n){unchecked{
         /*
         Loop through the user's entire pack
@@ -203,6 +201,10 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         (u=user[a].pack,p=new uint[](u.length));
         for(uint i;i<p.length;i++)p[i]=pack[u[i]].node;
     }}
+    function getGroupSales(address a)external view returns(address[]memory d,uint[]memory s){unchecked{
+        (d,s)=(user[a].downline,new uint[](d.length));
+        for(uint i;i<d.length;i++)s[i]=user[a].groupSales[d[i]];
+    }}
     function purchase(address referral,uint n,uint c)external{unchecked{
         require((n<3?node[0].count+node[1].count+node[2].count:node[n].count)>=c,"Insufficient nodes");
         /*
@@ -219,6 +221,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         /*
         Transfer USDT to this contract as checking and redistribution
         Check if user have super or asset node and give extra staking
+        Add points to group sales
         */
         IERC20(_A[1]).transferFrom(msg.sender,address(this),amt);
         address[4]memory d=getUplines(msg.sender); 
@@ -227,6 +230,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             IERC20(_A[1]).transferFrom(address(this),d[i],amtP);
             emit Payout(msg.sender,d[i],amtP,0);
             if(cm>0)pack[cm].t93n+=refB[i]/P;
+            user[d[i]].groupSales[msg.sender]+=amt;
         }
         /*
         Loop to generate nodes (random if <3)
