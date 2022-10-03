@@ -1,4 +1,3 @@
-//Add public function to see group sales
 //Add Aleo as a node
 //Withdrawal Aleo
 //Live price
