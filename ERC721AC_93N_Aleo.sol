@@ -196,7 +196,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         for(uint i;i<p.length;i++)p[i]=pack[u[i]].node;
     }}
     function getGroupSales(address a)external view returns(address[]memory d,uint[]memory s){unchecked{
-        (d,s)=(user[a].downline,new uint[](d.length));
+        (d=user[a].downline,s=new uint[](d.length));
         for(uint i;i<d.length;i++)s[i]=user[a].groupSales[d[i]];
     }}
     function purchase(address referral,uint n,uint c)external{unchecked{
