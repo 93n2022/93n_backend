@@ -42,8 +42,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     struct Node{
         uint price;
         uint count;
-        uint total; //1-3: shares, 4-5: total
-        uint factor; //1-3: shares, 4-5: staking %
+        uint total; //0-2: shares, 3-5: total
+        uint factor; //0-2: shares, 3-4: staking %
         uint period;
     }
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status); //0-U, 1-N
