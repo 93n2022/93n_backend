@@ -271,7 +271,6 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                             emit Transfer(msg.sender,address(0),p[i]);
                             z=1;
                         }
-                        
                     }
                 }
             }
