@@ -48,7 +48,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status); //0-U, 1-N
     mapping(uint=>address)private _A; //0-Admin, 1-USDT, 2-93N, 3-Swap, 4-Tech
-    mapping(uint=>Node)private node;
+    mapping(uint=>Node)public node;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
     mapping(address=>User)private user;
@@ -256,8 +256,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             else{
                 uint expiry=s.minted+node[s.node].period;
                 if(expiry>block.timestamp)
-                    x+=(node[p[i]].factor>1?s.t93n:ISWAP(_A[3]).getAmountsOut(node[5].price,_A[1],_A[2]))
-                        *node[p[i]].factor/P*(block.timestamp-s.claimed)/86400;
+                    x+=(node[s.node].factor>1?s.t93n:ISWAP(_A[3]).getAmountsOut(node[5].price,_A[1],_A[2]))
+                        *node[s.node].factor/P*(block.timestamp-s.claimed)/86400;
                 else{
                     uint y=expiry+2628e3;
                     if(y<block.timestamp&&y>s.claimed)(y=s.t93n*2/5,x+=y,s.t93n-=y);
@@ -333,11 +333,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }
     function withdrawCHECK()external view returns(uint x){unchecked{    
         for(uint i;i<user[msg.sender].pack.length;i++){
-            x+=(node[user[msg.sender].pack[i]].factor>1?
+            x+=(node[pack[user[msg.sender].pack[i]].node].factor>1?
                 pack[user[msg.sender].pack[i]].t93n:
-                ISWAP(_A[3]).getAmountsOut(node[5].price,_A[1],_A[2]))
-                *node[user[msg.sender].pack[i]].factor/P*
-                (block.timestamp-pack[user[msg.sender].pack[i]].claimed)/86400;
+                ISWAP(_A[3]).getAmountsOut(node[5].price,_A[1],_A[2]));
+                //*node[user[msg.sender].pack[i]].factor/P*
+                //(block.timestamp-pack[user[msg.sender].pack[i]].claimed)/86400;
         }
     }}
 }
