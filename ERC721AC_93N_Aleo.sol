@@ -327,16 +327,4 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         n>0?IERC20(_A[t]).transferFrom(address(this),msg.sender,n):
             IERC20(_A[t]).transferFrom(msg.sender,address(this),m);
     }}
-    function TESTsetexpiry(uint n,uint e)external{
-        node[n].period=e;
-    }
-    function withdrawCHECK()external view returns(uint x){unchecked{    
-        for(uint i;i<user[msg.sender].pack.length;i++){
-            x+=(node[pack[user[msg.sender].pack[i]].node].factor>1?
-                pack[user[msg.sender].pack[i]].t93n:
-                ISWAP(_A[3]).getAmountsOut(node[5].price,_A[1],_A[2]));
-                //*node[user[msg.sender].pack[i]].factor/P*
-                //(block.timestamp-pack[user[msg.sender].pack[i]].claimed)/86400;
-        }
-    }}
 }
