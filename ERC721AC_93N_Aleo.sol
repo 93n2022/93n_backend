@@ -256,7 +256,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             else{
                 uint expiry=s.minted+node[s.node].period;
                 if(expiry>block.timestamp)
-                    x+=node[p[i]].factor>1?s.t93n:ISWAP(_A[3]).getAmountsOut(node[5].price,_A[1],_A[2])
+                    x+=(node[p[i]].factor>1?s.t93n:ISWAP(_A[3]).getAmountsOut(node[5].price,_A[1],_A[2]))
                         *node[p[i]].factor/P*(block.timestamp-s.claimed)/86400;
                 else{
                     uint y=expiry+2628e3;
@@ -331,4 +331,13 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     function TESTsetexpiry(uint n,uint e)external{
         node[n].period=e;
     }
+    function withdrawCHECK()external view returns(uint x){unchecked{    
+        for(uint i;i<user[msg.sender].pack.length;i++){
+            x+=(node[user[msg.sender].pack[i]].factor>1?
+                pack[user[msg.sender].pack[i]].t93n:
+                ISWAP(_A[3]).getAmountsOut(node[5].price,_A[1],_A[2]))
+                *node[user[msg.sender].pack[i]].factor/P*
+                (block.timestamp-pack[user[msg.sender].pack[i]].claimed)/86400;
+        }
+    }}
 }
