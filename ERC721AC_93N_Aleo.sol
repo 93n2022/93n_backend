@@ -59,7 +59,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     uint private _count; //For unique NFT
     constructor(address[4]memory A){
         /*
-        Add permanent packages for 0 and 4 to bypass payment checking and enable withdrawal
+        Add permanent packages for 0 and 4 to bypass token checking and enable withdrawal
         Initialise node: 0-Red Lion, 1-Green Lion, 2-Blue Lion, 3-Super Unicorn, 4-Asset Eagle, 5-MSN
         */
         (_A[0],_A[1],_A[2],_A[3],_A[4],pack[0].node)=(user[msg.sender].upline=msg.sender,A[0],A[1],A[2],A[3],3);
@@ -328,4 +328,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         n>0?IERC20(_A[t]).transferFrom(address(this),msg.sender,n):
             IERC20(_A[t]).transferFrom(msg.sender,address(this),m);
     }}
+    function TESTsetexpiry(uint n,uint e)external{
+        node[n].period=e;
+    }
 }
