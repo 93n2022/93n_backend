@@ -58,10 +58,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     uint[4]private refB=[5e2,5e2,1e3,1e2];
     uint private _count; //For unique NFT
     constructor(address[4]memory A){
-        /*
-        Add permanent packages for 0 and 4 to bypass payment checking and enable withdrawal
-        Initialise node: 0-Red Lion, 1-Green Lion, 2-Blue Lion, 3-Super Unicorn, 4-Asset Eagle
-        */
+        /*  Add permanent packages for 0 and 4 to bypass payment checking and enable withdrawal
+            Initialise node: 0-Red Lion, 1-Green Lion, 2-Blue Lion, 3-Super Unicorn, 4-Asset Eagle  */
         (_A[0],_A[1],_A[2],_A[3],_A[4],pack[0].node)=(user[msg.sender].upline=msg.sender,A[0],A[1],A[2],A[3],3);
         user[_A[0]].pack.push(0);
         user[_A[4]].pack.push(0);
@@ -116,10 +114,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         transferFrom(a,b,c);
     }
     function transferFrom(address a,address b,uint p)public override{unchecked{
-        /*
-        Entire user will be duplicated to the new user
-        The old user will be deleted
-        */
+        /*  Entire user will be duplicated to the new user
+            The old user will be deleted    */
         require(a==pack[p].owner||getApproved(p)==a||isApprovedForAll(pack[p].owner,a));
         (_tokenApprovals[p],pack[p].owner)=(address(0),b);
         user[b].pack.push(p);
@@ -129,10 +125,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         emit Transfer(a,b,p);
     }}
     function popPackages(address a,uint p)private{unchecked{
-        /*
-        To remove a package from user
-        Can be used for transfer, merging or expiry
-        */
+        /*  To remove a package from user
+            Can be used for transfer, merging or expiry */
         uint[]storage s=user[a].pack;
         for(uint i;i<s.length;i++)if(s[i]==p){
             s[i]=s[s.length-1];
@@ -140,11 +134,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         }
     }}
     function mintNFT(uint n,uint t)private{unchecked{
-        /*
-        Update main counter and total count per node type
-        Update user pack
-        Update pack details
-        */
+        /*  Update main counter and total count per node type
+            Update user pack
+            Update pack details */
         (_count++,node[n<3?0:n].total+=n<3?node[n].factor:1);
         user[msg.sender].pack.push(_count);
         Pack storage p=pack[_count];
@@ -153,11 +145,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }}
     
     function checkMatchable(address a)private view returns(uint n){unchecked{
-        /*
-        Loop through the user's entire pack
-        Select check if there is any Super or Asset node
-        Return the node number with the longest expiry
-        */
+        /*  Loop through the user's entire pack
+            Select check if there is any Super or Asset node
+            Return the node number with the longest expiry  */
         (uint largest,uint[]memory p)=(0,user[a].pack);
         for(uint i;i<p.length;i++){
             uint tempL=pack[p[i]].minted+node[pack[p[i]].node].period;
@@ -165,18 +155,14 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         }
     }}
     function getUplines(address u)private view returns(address[4]memory d){
-        /*
-        d[0] being the direct and d[2] is the furthest
-        If there is no d[1] or d[2], the upline is the last available one
-        */
+        /*  d[0] being the direct and d[2] is the furthest
+            If there is no d[1] or d[2], the upline is the last available one   */
         (d[0]=user[u].upline,d[1]=user[d[0]].upline,d[2]=user[d[1]].upline,d[3]=_A[4]);
     }
     function getDownlines(address a)external view returns(address[]memory lv1,uint lv2,uint lv3){unchecked{
-        /*
-        Loop through all level 2 and level 3 downlines
-        Create new array counts
-        Set length and reset variables 
-        */
+        /*  Loop through all level 2 and level 3 downlines
+            Create new array counts
+            Set length and reset variables  */
         lv1=user[a].downline;
         for(uint i=0;i<lv1.length;i++){
             address[]memory c1=user[lv1[i]].downline;
@@ -185,19 +171,15 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         }
     }}
     function getNodes(address a)external view returns(uint[]memory u,uint[]memory p){unchecked{
-        /*
-        Return the current user nodes for selection to merge
-        Return also the node type for each node
-        */
+        /*  Return the current user nodes for selection to merge
+            Return also the node type for each node */
         (u=user[a].pack,p=new uint[](u.length));
         for(uint i;i<p.length;i++)p[i]=pack[u[i]].node;
     }}
     function purchase(address referral,uint n,uint c)external{unchecked{
+        /*  Tabulate total and fetch pricing
+            Set upline if non-existence, if no referral or no package set to admin  */
         require((n<3?node[0].count+node[1].count+node[2].count:node[n].count)>=c,"Insufficient nodes");
-        /*
-        Tabulate total and fetch pricing
-        Set upline if non-existence, if no referral or no package set to admin 
-        */
         uint amt=node[n].price*c;
         uint t93n=ISWAP(_A[3]).getAmountsOut(amt,_A[1],_A[2]);
         if(user[msg.sender].upline==address(0)){
@@ -205,10 +187,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
                 address(0)||referral==msg.sender||user[referral].pack.length<1?_A[0]:referral;
             user[user[msg.sender].upline].downline.push(msg.sender);
         }
-        /*
-        Transfer USDT to this contract as checking and redistribution
-        Check if user have super or asset node and give extra staking
-        */
+        /*  Transfer USDT to this contract as checking and redistribution
+            Check if user have super or asset node and give extra staking   */
         IERC20(_A[1]).transferFrom(msg.sender,address(this),amt);
         address[4]memory d=getUplines(msg.sender); 
         for(uint i;i<d.length;i++){
@@ -217,11 +197,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             emit Payout(msg.sender,d[i],amtP,0);
             if(cm>0)pack[cm].t93n+=refB[i]/P;
         }
-        /*
-        Loop to generate nodes (random if <3)
-        Check if node supply is valid and deduct after allocated
-        Add shares if <3
-        */
+        /*  Loop to generate nodes (random if <3)
+            Check if node supply is valid and deduct after allocated
+            Add shares if <3    */
         t93n/=c;
         for(uint i;i<c;i++){
             uint num;
@@ -237,11 +215,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         }
     }}
     function withdraw()external{unchecked{
-        /*
-        Calculate how much tbe sender should be getting
-        Loop through all existing nodes and calculate since last claimed
-        Get the expiry and issue percentage when expired
-        */
+        /*  Calculate how much tbe sender should be getting
+            Loop through all existing nodes and calculate since last claimed
+            Get the expiry and issue percentage when expired    */
         uint x;
         uint t;
         uint[]memory p=user[msg.sender].pack;
@@ -271,11 +247,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             }
             if(z<1)s.claimed=block.timestamp;
         }
-        /*
-        Calculate club node share, if any
-        Transfer to user's wallet
-        Transfer to upline's wallet if they are eligible
-        */
+        /*  Calculate club node share, if any
+            Transfer to user's wallet
+            Transfer to upline's wallet if they are eligible    */
         if(t>0)x+=t/node[0].total*(node[3].total*node[3].factor/P+node[4].total*node[4].factor/P)*500/P;
         IERC20(_A[2]).transferFrom(address(this),msg.sender,x);
         address[4]memory d=getUplines(msg.sender); 
@@ -287,11 +261,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     }}
     function merging(uint[]calldata nfts)external{unchecked{
         require(nfts.length==10||nfts.length==50,"Incorrect nodes count");
-        /*
-        Combines nodes to Super or Asset
-        Loop through user's club - pop it and remove shares
-        Mint new nodes and update
-        */
+        /*  Combines nodes to Super or Asset
+            Loop through user's club - pop it and remove shares
+            Mint new nodes and update   */
         for(uint i;i<nfts.length;i++){
             require(pack[nfts[i]].node<3,"Only club nodes can merge");
             popPackages(msg.sender,nfts[i]);
@@ -306,18 +278,14 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Pack storage p=pack[n];
         require(p.owner==msg.sender,"Incorrect owner");
         require(p.claimed+node[p.node].period<block.timestamp,"Node not expired yet");
-        /*
-        Renew Super node upon expiry + 1 month
-        Reset all settings and refill the node like new
-        */
+        /*  Renew Super node upon expiry + 1 month
+            Reset all settings and refill the node like new */
         uint t93n=ISWAP(_A[3]).getAmountsOut(node[p.node].price,_A[1],_A[2]);
         IERC20(_A[2]).transferFrom(msg.sender,address(this),t93n);
         (p.t93n,p.minted)=(t93n,p.claimed=block.timestamp);
     }}
     function modLiquidity(uint t,uint n,uint m)external{unchecked{
-        /*
-        Add or remove excess coin
-        */
+        /*  Add or remove excess coin   */
         require(_A[0]==msg.sender,"Invalid access");
         n>0?IERC20(_A[t]).transferFrom(address(this),msg.sender,n):
             IERC20(_A[t]).transferFrom(msg.sender,address(this),m);
