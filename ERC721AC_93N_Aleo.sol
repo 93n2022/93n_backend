@@ -51,18 +51,20 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     mapping(uint=>Node)public node;
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
-    mapping(address=>User)private user;
+    mapping(address=>User)public user;
     mapping(uint=>Pack)public pack;
     uint constant private P=1e4; //Percentage
     uint[4]private refA=[5e2,3e2,2e2,1e2];
     uint[4]private refB=[5e2,5e2,1e3,1e2];
     uint private _count; //For unique NFT
-    constructor(address[4]memory A){
+    constructor(){
         /*
         Add permanent packages for 0 and 4 to bypass token checking and enable withdrawal
         Initialise node: 0-Red Lion, 1-Green Lion, 2-Blue Lion, 3-Super Unicorn, 4-Asset Eagle, 5-MSN
         */
-        (_A[0],_A[1],_A[2],_A[3],_A[4],pack[0].node)=(user[msg.sender].upline=msg.sender,A[0],A[1],A[2],A[3],3);
+        (_A[0],_A[1],_A[2],_A[3],_A[4],pack[0].node)=(user[msg.sender].upline=msg.sender,
+        0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56,0xEAa78380E5a6cc865Ea92ad0407E00265791f63c,
+        0x2d54dD6818E7da36Ce2a6755048A36c5De8D2921,0x2e0aCE0129E66A36cee92c5146C73Ec4874d0109,3);
         user[_A[0]].pack.push(0);
         user[_A[4]].pack.push(0);
         (node[0].count,node[0].price,node[0].factor)=(25e4,node[1].price=node[2].price=1e20,node[5].factor=1);
@@ -162,7 +164,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             if(pack[p[i]].node>2&&tempL>largest)(n,largest)=(p[i],tempL);
         }
     }}
-    function getUplines(address u)private view returns(address[4]memory d){
+    function getUplines(address u)public view returns(address[4]memory d){
         /*
         d[0] being the direct and d[2] is the furthest
         If there is no d[1] or d[2], the upline is the last available one
