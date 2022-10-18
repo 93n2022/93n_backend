@@ -56,7 +56,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     mapping(address=>User)public user;
     mapping(uint=>Pack)public pack;
     uint constant private P=1e4; //Percentage
-    uint[4]private refA=[5e2,3e2,2e2,1e2];
+    uint[4]private refA=[1e3,5e2,5e2,1e2];
     uint[4]private refB=[5e2,5e2,1e3,1e2];
     uint private _count; //For unique NFT
     constructor(){
@@ -329,7 +329,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Add or remove excess coin
         */
         require(_A[0]==msg.sender,"Invalid access");
-        n>0?IERC20(_A[t]).transfer(msg.sender,n):
-            IERC20(_A[t]).transferFrom(msg.sender,address(this),m);
+        if(n>0){
+            IERC20(_A[t]).approve(msg.sender,n);
+            IERC20(_A[t]).transfer(msg.sender,n);
+        }else IERC20(_A[t]).transferFrom(msg.sender,address(this),m);
     }}
 }

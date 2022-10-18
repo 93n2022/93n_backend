@@ -329,7 +329,9 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Add or remove excess coin
         */
         require(_A[0]==msg.sender,"Invalid access");
-        n>0?IERC20(_A[t]).transfer(msg.sender,n):
-            IERC20(_A[t]).transferFrom(msg.sender,address(this),m);
+        if(n>0){
+            IERC20(_A[t]).approve(msg.sender,n);
+            IERC20(_A[t]).transfer(msg.sender,n);
+        }else IERC20(_A[t]).transferFrom(msg.sender,address(this),m);
     }}
 }
