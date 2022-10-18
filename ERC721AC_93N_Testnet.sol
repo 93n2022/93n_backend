@@ -20,7 +20,9 @@ interface IERC721Metadata{
 }
 interface IERC20{
     function transferFrom(address,address,uint)external;
+    function transfer(address,uint256)external;
     function balanceOf(address)external view returns(uint256);
+    function approve(address,uint256)external;
 }
 interface ISWAP{
     function getAmountsOut(uint,address,address)external view returns(uint);
@@ -218,7 +220,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         address[4]memory d=getUplines(msg.sender); 
         for(uint i;i<d.length;i++){
             (uint amtP,uint cm)=(amt*refA[i]/P,checkMatchable(d[i]));
-            IERC20(_A[1]).transferFrom(address(this),d[i],amtP);
+            IERC20(_A[1]).approve(d[i],amtP);
+            IERC20(_A[1]).transfer(d[i],amtP);
             emit Payout(msg.sender,d[i],amtP,0);
             if(cm>0)pack[cm].t93n+=refB[i]/P;
             user[d[i]].groupSales[msg.sender]+=amt;
@@ -284,11 +287,11 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Transfer to upline's wallet if they are eligible
         */
         if(t>0)x+=t/node[0].total*(node[3].total*node[3].factor/P+node[4].total*node[4].factor/P)*500/P;
-        IERC20(_A[2]).transferFrom(address(this),msg.sender,x);
+        IERC20(_A[2]).transfer(msg.sender,x);
         address[4]memory d=getUplines(msg.sender); 
         for(uint i;i<d.length;i++)if(checkMatchable(d[i])>0){
             uint amtP=x*refB[i]/P;
-            IERC20(_A[2]).transferFrom(address(this),d[i],amtP);
+            IERC20(_A[2]).transfer(d[i],amtP);
             emit Payout(msg.sender,d[i],amtP,1);
         }
     }}
@@ -326,7 +329,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         Add or remove excess coin
         */
         require(_A[0]==msg.sender,"Invalid access");
-        n>0?IERC20(_A[t]).transferFrom(address(this),msg.sender,n):
+        n>0?IERC20(_A[t]).transfer(msg.sender,n):
             IERC20(_A[t]).transferFrom(msg.sender,address(this),m);
     }}
 }
