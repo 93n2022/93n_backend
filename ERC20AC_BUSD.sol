@@ -1,7 +1,7 @@
 //0x0000000000000000000000000000000000000000
 //1000000000000000000 1000000000000000000000 31000000000000000000000 62000000000000000000000
 
-pragma solidity>0.8.0;//SPDX-License-Identifier:None
+pragma solidity 0.5.16;
 
 interface IBEP20 {
   /**
@@ -107,10 +107,10 @@ interface IBEP20 {
 contract Context {
   // Empty internal constructor, to prevent people from mistakenly deploying
   // an instance of this contract, which should be used via inheritance.
-  constructor () { }
+  constructor () internal { }
 
   function _msgSender() internal view returns (address payable) {
-    return payable(msg.sender);
+    return msg.sender;
   }
 
   function _msgData() internal view returns (bytes memory) {
@@ -288,7 +288,7 @@ contract Ownable is Context {
   /**
    * @dev Initializes the contract setting the deployer as the initial owner.
    */
-  constructor () {
+  constructor () internal {
     address msgSender = _msgSender();
     _owner = msgSender;
     emit OwnershipTransferred(address(0), msgSender);
@@ -351,7 +351,7 @@ contract BEP20Token is Context, IBEP20, Ownable {
   string public _symbol;
   string public _name;
 
-  constructor() {
+  constructor() public {
     _name = "BUSD Token";
     _symbol = "BUSD";
     _decimals = 18;
