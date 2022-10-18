@@ -59,7 +59,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
     mapping(address=>User)public user;
     mapping(uint=>Pack)public pack;
     uint constant private P=1e4; //Percentage
-    uint[4]private refA=[1e3,5e3,5e2,1e2];
+    uint[4]private refA=[1e3,5e2,5e2,1e2];
     uint[4]private refB=[5e2,5e2,1e3,1e2];
     uint private _count; //For unique NFT
     constructor(){
