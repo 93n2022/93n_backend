@@ -47,6 +47,7 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         uint total; //0-2: shares, 3-5: total
         uint factor; //0-2: shares, 3-4: staking %
         uint period;
+        string uri;
     }
     event Payout(address indexed from,address indexed to,uint amount,uint indexed status); //0-U, 1-N
     mapping(uint=>address)private _A; //0-Admin, 1-USDT, 2-93N, 3-Swap, 4-Tech
@@ -69,11 +70,15 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
             0x2d54dD6818E7da36Ce2a6755048A36c5De8D2921,0x2e0aCE0129E66A36cee92c5146C73Ec4874d0109,3);
         user[_A[0]].pack.push(0);
         user[_A[4]].pack.push(0);
-        (node[0].count,node[0].price,node[0].factor)=(25e4,node[1].price=node[2].price=1e20,node[5].factor=1);
-        (node[1].count,node[1].factor)=(15e4,2);
-        (node[2].count,node[2].factor)=(node[5].count=1e5,3);
-        (node[3].count,node[3].price,node[3].period,node[3].factor)=(4e4,node[5].price=1e21,15552e3,10);
-        (node[4].count,node[4].price,node[4].period,node[4].factor)=(1e4,5e21,node[5].period=31104e3,7);
+        (node[0].count,node[0].price,node[0].factor,node[0].uri)=
+            (25e4,node[1].price=node[2].price=1e20,node[5].factor=1,"0");
+        (node[1].count,node[1].factor,node[1].uri)=(15e4,2,"1");
+        (node[2].count,node[2].factor,node[2].uri)=(node[5].count=1e5,3,"2");
+        (node[3].count,node[3].price,node[3].period,node[3].factor,node[3].uri)=
+            (4e4,node[5].price=1e21,15552e3,10,"3");
+        (node[4].count,node[4].price,node[4].period,node[4].factor,node[4].uri)=
+            (1e4,5e21,node[5].period=31104e3,7,"4");
+        node[5].uri="5";
     }
     function supportsInterface(bytes4 a)external pure returns(bool){
         return a==type(IERC721).interfaceId||a==type(IERC721Metadata).interfaceId;
@@ -108,13 +113,8 @@ contract ERC721AC_93N is IERC721,IERC721Metadata{
         return user[a].pack.length;
     }
     function tokenURI(uint a)external view override returns(string memory){
-        (string memory s,uint n)=("5",pack[a].node);
-        if(n==0)s="0";
-        if(n==1)s="1";
-        if(n==2)s="2";
-        if(n==3)s="3";
-        if(n==4)s="4";
-        return string(abi.encodePacked("ipfs://QmXohBm69ykPeYjbpAoWwnoaSC39aTk7xjCqqy8nCnPeRj/",s,".json"));
+        return string(abi.encodePacked("ipfs://QmXohBm69ykPeYjbpAoWwnoaSC39aTk7xjCqqy8nCnPeRj/",
+            node[pack[a].node].uri,".json"));
     }
     function safeTransferFrom(address a,address b,uint c)external override{
         transferFrom(a,b,c);
