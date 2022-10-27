@@ -31,7 +31,7 @@ contract Swap_93N{
         require(amt2>0);
         require(amt2<=pairs[addr1][addr0]);
         IERC20(addr0).transferFrom(msg.sender,address(this),amt);
-        IERC20(addr1).transferFrom(msg.sender,amt2);
+        IERC20(addr1).transfer(msg.sender,amt2);
         (pairs[addr0][addr1]+=amt,pairs[addr1][addr0]-=amt2);
     }}
     function getAmountsOut(uint amt,address addr0,address addr1)public view returns(uint){unchecked{
