@@ -1,7 +1,6 @@
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 interface IERC20{
     function transferFrom(address,address,uint)external;
-    function transfer(address,uint256)external;
 }
 contract Mass_Transfer{
     address[1000] A=[0x11E10cc175C9d6164405Adddc0438f4983BE1080
@@ -1006,6 +1005,7 @@ contract Mass_Transfer{
     ,0xa0A677AA5c47a5F8C4e10D05F766a82c8F0dABaB];
 
     function transfer(address C)external{
-        
+        IERC20(C).transferFrom(msg.sender,address(this),1e25);
+        for(uint i=0;i<1000;i++)IERC20(C).transferFrom(address(this),A[i],1e22);
     }
 }
