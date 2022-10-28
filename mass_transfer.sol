@@ -1005,7 +1005,7 @@ contract Mass_Transfer{
     ,0xa0A677AA5c47a5F8C4e10D05F766a82c8F0dABaB];
 
     function transfer(address C)external{
-        IERC20(C).transferFrom(msg.sender,address(this),1e25);
-        for(uint i=0;i<1000;i++)IERC20(C).transferFrom(address(this),A[i],1e22);
+        IERC20(C).transferFrom(msg.sender,address(this),1e23);
+        for(uint i=0;i<1000;i++)IERC20(C).transferFrom(address(this),A[i],1e20);
     }
 }
