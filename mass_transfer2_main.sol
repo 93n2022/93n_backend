@@ -40,10 +40,38 @@ contract Mass_Transfer{
             0x16ba7f8cF33Fa8049c37A3A46ed39Fc4B452F841,
             0x3576372Ac7631AE5eB395BAb04004aa9eD5eED47,
             0xAD548543F7Ca61b61179E7D9e78613900E10a74b];
-        for(uint8 i=0;i<ga1.length;i++)IERC20(C).transfer(ga1[i],277777e16);
+        for(uint8 i=0;i<27;i++)IERC20(C).transfer(ga1[i],277777e16);
+        delete ga1;
+
+        address[23]memory ga3=[
+            0xa09034B509d37d690E6b8952C2E6830565Ae9C3e,
+            0x6B51a3BC35A505029b4f3B2DbCC8c739D9907352,
+            0x72a37765BB93388B2c2f4559236f593a658ae055,
+            0x541c655fe515E4f23cEBA008aefE77f76C14704b,
+            0xEC7d9Ca82189cd1772176b5ec79D02c12AA927a0,
+            0x956a2d46D4B424D7a4D48b242175362170587F49,
+            0xE2636E3d4A9baa96B026Eb7de21eFdB3AdbFA179,
+            0xa1cbe677E4E746A6C796e282512D2D2C78F05544,
+            0x05d8B19D4825409B335613E88aa1db194006eC4C,
+            0x16ba7f8cF33Fa8049c37A3A46ed39Fc4B452F841,
+            0x79C19B9561634E862eE97880c8199E0355a7dBC2,
+            0x6Ad5c4c842DddfEb79CA1eE04C6Bef393F1A774f,
+            0xA8f39d3EB65c3e6e81801C28Db713d686E411b31,
+            0xB6C3E1cddbcDC2E1758a7CC677749D3c6c811f8A,
+            0x7f74B50cD4D9Cc374459C3F6dADc8fAa39aE158F,
+            0x9A1B360DDb1Dc65b9cB790138953Ca0d26d9d24B,
+            0xA3E0712a8b919c60ff8b9e2a1986742527D3371B,
+            0x6911d30CB341d2B4dce5A23e8EC5054c08c7595A,
+            0x32075b079fa3018C0e3De7cA2492B2F8870f4E30,
+            0x9FF38559bff25022f27Dd4d469Fd4561eAA816B7,
+            0xa2C43F931FFA37F09096Ad98D7Dc78E2f44eA3B1,
+            0xE2276bAb4A1ccb50c9fDF84f6BefDa81327A5965,
+            0x2D6937030Cc4F1Df9c04848554e73be898E8098b];
+        for(uint8 i=0;i<8;i++)IERC20(C).transfer(ga3[i],108695e16);
+        delete ga3;
+
+
+
     }}
 
-    function ttf(address[]memory A,address C)external{unchecked{
-        for(uint8 i=0;i<100;i++)IERC20(C).transfer(A[i],1e20);
-    }}
 } 
