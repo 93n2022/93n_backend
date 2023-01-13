@@ -7,7 +7,8 @@ contract Mass_Transfer{
     function load(address C)external{
         IERC20(C).transferFrom(msg.sender,address(this),1e23);
     }
+    
     function ttf(address[]memory A,address C)external{unchecked{
         for(uint8 i=0;i<100;i++)IERC20(C).transfer(A[i],1e20);
     }}
-}
+} 
