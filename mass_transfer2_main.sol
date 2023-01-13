@@ -5,7 +5,11 @@ interface IERC20{
 }
 contract Mass_Transfer{
 
-    IERC20 private C=IERC20(0xd9145CCE52D386f254917e481eB44e9943F39138);
+    IERC20 private C;
+
+    constructor(address A){
+        C=IERC20(A);
+    }
     
     function load()external{unchecked{
         C.transferFrom(msg.sender,address(this),42499849e16);
