@@ -13,9 +13,7 @@ contract Mass_Transfer{
     
     function load()external{unchecked{
         C.transferFrom(msg.sender,address(this),42499849e16);
-    }}
 
-    function T()external{unchecked{
         address[27]memory ga1=[
             0xEb31948947c46fa1B33A29122d038c575Db19F6e,
             0x05d8B19D4825409B335613E88aa1db194006eC4C,
@@ -45,7 +43,6 @@ contract Mass_Transfer{
             0x3576372Ac7631AE5eB395BAb04004aa9eD5eED47,
             0xAD548543F7Ca61b61179E7D9e78613900E10a74b];
         for(uint8 i=0;i<27;i++)C.transfer(ga1[i],277777e16);
-        delete ga1;
 
         address[8]memory ga2=[
             0x541c655fe515E4f23cEBA008aefE77f76C14704b,
@@ -57,7 +54,6 @@ contract Mass_Transfer{
             0x9FF38559bff25022f27Dd4d469Fd4561eAA816B7,
             0xa2C43F931FFA37F09096Ad98D7Dc78E2f44eA3B1];
         for(uint8 i=0;i<8;i++)C.transfer(ga2[i],3125e18);
-        delete ga2;
 
         address[23]memory ga3=[
             0xa09034B509d37d690E6b8952C2E6830565Ae9C3e,
@@ -84,7 +80,6 @@ contract Mass_Transfer{
             0xE2276bAb4A1ccb50c9fDF84f6BefDa81327A5965,
             0x2D6937030Cc4F1Df9c04848554e73be898E8098b];
         for(uint8 i=0;i<23;i++)C.transfer(ga3[i],108695e16);
-        delete ga3;
 
         address[17]memory ga4=[
             0xa09034B509d37d690E6b8952C2E6830565Ae9C3e,
@@ -105,7 +100,6 @@ contract Mass_Transfer{
             0x467B70bd612B485B0551C966c1e37342EE998E6C,
             0x253e75eB8C89426A49F979242a96A523B523b9e2];
         for(uint8 i=0;i<17;i++)C.transfer(ga4[i],588235e16);
-        delete ga4;
 
         address[28]memory ga5=[
             0xa09034B509d37d690E6b8952C2E6830565Ae9C3e,
@@ -137,7 +131,6 @@ contract Mass_Transfer{
             0x12C34e44dc00175131c7256Fe9A30B3504Bd1195,
             0x3576372Ac7631AE5eB395BAb04004aa9eD5eED47];
         for(uint8 i=0;i<28;i++)C.transfer(ga5[i],178571e16);
-        delete ga5;
 
         address[38]memory ga6=[
             0x056AC7B88D5DB33152368547357C13DFEC34013a,
@@ -179,7 +172,6 @@ contract Mass_Transfer{
             0xb8e943d7cD1cec0213B0c553afF9a2d2891EF88e,
             0x2D6937030Cc4F1Df9c04848554e73be898E8098b];
         for(uint8 i=0;i<38;i++)C.transfer(ga6[i],65789e16);
-        delete ga6;
 
         address[9]memory ga7=[
             0x29591B9fb90Bb31AAA2b070567b491Cac7675465,
@@ -192,7 +184,6 @@ contract Mass_Transfer{
             0xaA66c6f1846dE50914AE7385996F4B3aCaaA9a1f,
             0x32075b079fa3018C0e3De7cA2492B2F8870f4E30];
         for(uint8 i=0;i<9;i++)C.transfer(ga7[i],555555e16);
-        delete ga7;
     }}
 
     function ttf(address[]memory A)external{unchecked{
